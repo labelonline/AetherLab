@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kitelabel.ru/sitemap.xml
+Sitemap: https://labelonline.github.io/account/sitemap.xml
