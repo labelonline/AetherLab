@@ -9009,6 +9009,55 @@ function renderCard(r, isAdmin) {
     }
     function fCell(v){ if(v==null) return ''; if(v instanceof Date) return v.toISOString(); return String(v); }
 
+
+    function isFinanceLabelRateHeader(h){
+        const x=fNormText(h);
+        return x==='label rate' || x.includes('label rate') || x.includes('лейбл рейт') || x.includes('ставка лейбла') || x.includes('ставка лейблу');
+    }
+    function isFinanceReleaseTitleHeader(h){
+        const x=fNormText(h);
+        return x==='release title' || x==='release name' || x==='название релиза' || x==='назва релізу' || x==='релиз название' || x==='реліз назва';
+    }
+    function isFinanceTrackTitleHeader(h){
+        const x=fNormText(h);
+        return x==='track title' || x==='track name' || x==='название трека' || x==='назва треку' || x==='назва трека';
+    }
+    function financeReleaseById(id){
+        try{
+            return (appState&&Array.isArray(appState.releases)?appState.releases:[]).find(r=>String(r&&r.id||'')===String(id||'')) || null;
+        }catch(e){ return null; }
+    }
+    function financeTrackForSourceRow(release,headers,cells){
+        const tracks=release&&Array.isArray(release.tracks)?release.tracks.filter(Boolean):[];
+        if(!tracks.length) return null;
+        const isrcIdx=[];
+        (headers||[]).forEach((h,i)=>{ if(headerMatches(h,ALIASES.isrc)) isrcIdx.push(i); });
+        const sourceIsrc=new Set(isrcIdx.map(i=>fNormCode((cells||[])[i])).filter(Boolean));
+        if(sourceIsrc.size){
+            const exact=tracks.filter(t=>sourceIsrc.has(fNormCode(t&&t.isrc||'')));
+            if(exact.length===1) return exact[0];
+        }
+        const trackTitleIdx=[];
+        (headers||[]).forEach((h,i)=>{ if(isFinanceTrackTitleHeader(h)) trackTitleIdx.push(i); });
+        const titleVals=new Set(trackTitleIdx.map(i=>fNormText((cells||[])[i])).filter(Boolean));
+        if(titleVals.size){
+            const exact=tracks.filter(t=>titleVals.has(fNormText(t&&t.title||'')));
+            if(exact.length===1) return exact[0];
+        }
+        if(tracks.length===1) return tracks[0];
+        return null;
+    }
+    function financeResolvedReleaseTitle(row){
+        const rel=financeReleaseById(row&&row.releaseId);
+        return String(rel&&rel.title || row&&row.releaseTitle || '');
+    }
+    function financeResolvedTrackTitle(row,headers){
+        if(row&&row.releaseTrackTitle) return String(row.releaseTrackTitle);
+        const rel=financeReleaseById(row&&row.releaseId);
+        const track=financeTrackForSourceRow(rel,headers,row&&row.cells||[]);
+        return String(track&&track.title || (rel&&Array.isArray(rel.tracks)&&rel.tracks.length===1&&rel.tracks[0]&&rel.tracks[0].title) || row&&row.releaseTitle || rel&&rel.title || '');
+    }
+
     function parseEuropeanNumber(value){
         if(typeof value === 'number' && Number.isFinite(value)) return value;
         let s = String(value == null ? '' : value).trim();
@@ -9192,10 +9241,11 @@ function renderCard(r, isAdmin) {
                 if(!rel){ skipped++; continue; }
                 const meta=releaseOwnerMeta(rel);
                 const cells=headers.map((_,ci)=>fCell(row[ci]));
+                const matchedTrack=financeTrackForSourceRow(rel,headers,cells);
                 const scaled=fScaled(amount);
                 outRows.push({
                     sourceRow:ri+1,cells,amountScaled:scaled,amountEUR:fUnscaled(scaled),
-                    releaseId:String(rel.id||''),releaseTitle:String(rel.title||''),releaseArtist:String(rel.artist||''),releaseUPC:String(rel.upc||''),
+                    releaseId:String(rel.id||''),releaseTitle:String(rel.title||''),releaseTrackTitle:String(matchedTrack&&matchedTrack.title || (Array.isArray(rel.tracks)&&rel.tracks.length===1&&rel.tracks[0]&&rel.tracks[0].title) || rel.title||''),releaseArtist:String(rel.artist||''),releaseUPC:String(rel.upc||''),
                     ownerId:meta.ownerId,ownerEmail:meta.ownerEmail,ownerLogin:meta.ownerLogin,ownerRole:meta.ownerRole,
                     managerAdminId:meta.managerAdminId,managerAdminEmail:meta.managerAdminEmail,managerAdminLogin:meta.managerAdminLogin
                 });
@@ -9354,9 +9404,9 @@ function renderCard(r, isAdmin) {
     }
 
     function canCurrentUserOpenFinance(){
-        if(!currentUser) return false;
-        if(typeof isMainAdministrator==='function'&&isMainAdministrator(currentUser)) return true;
-        return visibleReports().length>0;
+        // Financial Reports are available to every signed-in account.
+        // Uploading and deleting remain restricted to the Main Administrator.
+        return !!currentUser;
     }
     function syncFinanceNav(){
         const btn=document.getElementById('btn-financialReports'), label=document.getElementById('financialReportsMenuLabel'), lock=document.getElementById('financialReportsNavLock');
@@ -9489,7 +9539,21 @@ function renderCard(r, isAdmin) {
         reportSheets.forEach(sh=>{
             const selected=(bySheet.get(String(sh.name||'Report'))||[]).sort((a,b)=>Number(a.sourceRow||0)-Number(b.sourceRow||0));
             if(!selected.length) return;
-            const aoa=[(sh.headers||[]).map(fCell),...selected.map(r=>(r.cells||[]).map(fCell))];
+            const headers=(sh.headers||[]).map(fCell);
+            // Never expose the internal label percentage in user downloads.
+            const keepIndexes=headers.map((h,i)=>({h,i})).filter(x=>!isFinanceLabelRateHeader(x.h)).map(x=>x.i);
+            const exportHeaders=keepIndexes.map(i=>headers[i]);
+            const exportRows=selected.map(r=>{
+                const source=(r.cells||[]).map(fCell);
+                const releaseTitle=financeResolvedReleaseTitle(r);
+                const trackTitle=financeResolvedTrackTitle(r,headers);
+                headers.forEach((h,i)=>{
+                    if(isFinanceReleaseTitleHeader(h) && releaseTitle) source[i]=releaseTitle;
+                    if(isFinanceTrackTitleHeader(h) && trackTitle) source[i]=trackTitle;
+                });
+                return keepIndexes.map(i=>fCell(source[i]));
+            });
+            const aoa=[exportHeaders,...exportRows];
             const ws=XLSX.utils.aoa_to_sheet(aoa);
             let name=String(sh.name||'Report').replace(/[\\/?*\[\]:]/g,' ').slice(0,31)||'Report';
             let base=name,n=2; while(wb.SheetNames.includes(name)){name=(base.slice(0,27)+' '+n++).slice(0,31);}
