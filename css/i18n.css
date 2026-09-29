@@ -1,0 +1,130 @@
+/* AetherLab — extracted from the former monolithic index.html. */
+
+    #aetherLanguageGate{
+        position:fixed; inset:0; z-index:2147483000;
+        display:none; align-items:center; justify-content:center;
+        padding:22px;
+        background:rgba(5,7,11,.92);
+        backdrop-filter:blur(18px);
+        -webkit-backdrop-filter:blur(18px);
+    }
+    html.aether-language-pending #aetherLanguageGate{display:flex;}
+    html.aether-language-pending body{overflow:hidden!important;}
+    .aether-language-card{
+        width:min(100%,480px);
+        padding:30px;
+        border-radius:28px;
+        border:1px solid rgba(255,255,255,.12);
+        background:linear-gradient(180deg,rgba(23,28,39,.98),rgba(12,15,22,.98));
+        box-shadow:0 30px 90px rgba(0,0,0,.62);
+        color:#fff;
+    }
+    .aether-language-card h2{
+        margin:0 0 22px;
+        font-size:clamp(24px,5vw,34px);
+        line-height:1.16;
+        letter-spacing:-.035em;
+        text-align:center;
+    }
+    .aether-language-options{display:grid;gap:10px;}
+    .aether-language-choice{
+        width:100%; min-height:56px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:18px;
+        background:rgba(255,255,255,.045);
+        color:#f7f8fb;
+        font-weight:750;
+        font-size:15px;
+        cursor:pointer;
+        transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+    }
+    .aether-language-choice:hover{transform:translateY(-1px);background:rgba(255,255,255,.075);}
+    .aether-language-choice.selected{
+        border-color:var(--accent,#446EF0);
+        background:color-mix(in srgb,var(--accent,#446EF0) 18%,transparent);
+        box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#446EF0) 15%,transparent),
+                   0 0 28px color-mix(in srgb,var(--accent,#446EF0) 34%,transparent);
+    }
+    #aetherLanguageConfirm{
+        width:100%; min-height:56px; margin-top:18px;
+        border:0; border-radius:999px;
+        background:rgba(255,255,255,.08);
+        color:rgba(255,255,255,.42);
+        font-weight:800; font-size:15px;
+        cursor:not-allowed;
+        transition:all .22s ease;
+    }
+    #aetherLanguageConfirm.ready{
+        cursor:pointer;
+        color:#fff;
+        background:linear-gradient(135deg,var(--accent,#446EF0),var(--accent-bg,#5D83FF));
+        animation:aetherLanguageReadyGlow 1.45s ease-in-out infinite alternate;
+    }
+    @keyframes aetherLanguageReadyGlow{
+        from{box-shadow:0 0 0 1px color-mix(in srgb,var(--accent,#446EF0) 45%,transparent),0 0 18px color-mix(in srgb,var(--accent,#446EF0) 28%,transparent);}
+        to{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#446EF0) 22%,transparent),0 0 38px color-mix(in srgb,var(--accent,#446EF0) 58%,transparent);}
+    }
+    .aether-bottom-actions{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) 58px;
+        align-items:stretch;
+        gap:8px;
+    }
+    .aether-bottom-actions>.menu-btn{margin:0!important;}
+    .aether-language-switch{position:relative;}
+    .aether-language-current{
+        width:58px; height:48px; padding:0;
+        border-radius:14px;
+        border:1px solid var(--border);
+        background:rgba(255,255,255,.045);
+        color:#fff;
+        font-size:12px;
+        font-weight:850;
+        letter-spacing:.08em;
+        cursor:pointer;
+        transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+    }
+    .aether-language-current:hover{
+        transform:translateY(-1px);
+        border-color:color-mix(in srgb,var(--accent,#446EF0) 65%,rgba(255,255,255,.12));
+        background:color-mix(in srgb,var(--accent,#446EF0) 10%,rgba(255,255,255,.04));
+        box-shadow:0 0 22px color-mix(in srgb,var(--accent,#446EF0) 24%,transparent);
+    }
+    .aether-language-menu{
+        position:absolute;
+        right:0; bottom:calc(100% + 8px);
+        width:58px;
+        display:grid; gap:6px;
+        padding:7px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:16px;
+        background:rgba(16,20,29,.98);
+        box-shadow:0 18px 45px rgba(0,0,0,.48);
+        backdrop-filter:blur(14px);
+        z-index:1200;
+        opacity:0; visibility:hidden;
+        transform:translateY(8px) scale(.96);
+        transform-origin:bottom right;
+        transition:opacity .16s ease,transform .16s ease,visibility .16s ease;
+    }
+    .aether-language-menu.open{
+        opacity:1; visibility:visible; transform:translateY(0) scale(1);
+    }
+    .aether-language-mini{
+        width:44px; height:40px; padding:0;
+        border-radius:11px;
+        border:1px solid rgba(255,255,255,.1);
+        background:rgba(255,255,255,.05);
+        color:#fff;
+        font-size:11px; font-weight:850; letter-spacing:.07em;
+        cursor:pointer;
+    }
+    .aether-language-mini:hover{
+        border-color:var(--accent,#446EF0);
+        box-shadow:0 0 18px color-mix(in srgb,var(--accent,#446EF0) 30%,transparent);
+    }
+    @media(max-width:520px){
+        .aether-language-card{padding:24px 18px;border-radius:24px;}
+    }
+
+

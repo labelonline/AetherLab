@@ -1,0 +1,35 @@
+<div class="view-section hidden" id="sec-newRelease">
+<div class="hidden" id="editRejectReasonBox" style="max-width:900px;margin-bottom:18px;padding:16px 18px;border-radius:22px;border:1px solid rgba(239,68,68,.28);background:rgba(239,68,68,.10);color:#ffb1b1;line-height:1.6;"></div>
+<div style="display: flex; gap: 40px; max-width: 900px; flex-wrap: wrap;">
+<div style="flex: 1; min-width: 300px;">
+<h3>Основная информация</h3><p class="text-sm" style="margin-bottom: 20px;">Поля со звездочкой (<span class="req-star">*</span>) обязательны к заполнению.</p>
+<div class="form-group"><label>Формат релиза <span class="req-star">*</span></label><select id="r_type" onchange="toggleReleaseType(); isDraftDirty=true;"><option value="">Выберите формат</option><option value="Сингл">Сингл (1 трек)</option><option value="Альбом/EP">Альбом/EP (от 2 треков)</option></select></div>
+<div class="form-group"><label>Название релиза <span class="req-star">*</span></label><input id="r_title" oninput="isDraftDirty=true;" placeholder="Название" type="text"/></div>
+<div class="form-group"><label>Артисты <span class="req-star">*</span></label><div id="r_artist_container"></div></div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div class="form-group"><label>Жанр <span class="req-star">*</span></label><select id="r_genre" onchange="isDraftDirty=true;"><option value="">Выберите жанр</option><option value="Hip Hop/Rap">Hip Hop/Rap</option><option value="Pop">Pop</option><option value="Electronic">Electronic</option><option value="R&B">R&B</option><option value="Rock">Rock</option><option value="Alternative">Alternative</option><option value="Dance">Dance</option><option value="House">House</option><option value="Techno">Techno</option><option value="Trap">Trap</option><option value="Drill">Drill</option><option value="Phonk">Phonk</option><option value="Afrobeats">Afrobeats</option><option value="Reggaeton">Reggaeton</option><option value="Latin">Latin</option><option value="Pop Rock">Pop Rock</option><option value="Indie Pop">Indie Pop</option><option value="Indie Rock">Indie Rock</option><option value="Metal">Metal</option><option value="Punk">Punk</option><option value="Jazz">Jazz</option><option value="Blues">Blues</option><option value="Soul">Soul</option><option value="Funk">Funk</option><option value="Country">Country</option><option value="Folk">Folk</option><option value="Classical">Classical</option><option value="Soundtrack">Soundtrack</option><option value="Ambient">Ambient</option><option value="Lo-Fi">Lo-Fi</option><option value="Children Music">Children Music</option><option value="Spoken Word">Spoken Word</option></select></div><div class="form-group"><label>Год <span class="req-star">*</span></label><select id="r_year" onchange="isDraftDirty=true;"></select></div></div>
+<div class="release-date-grid"><div class="form-group"><label>Дата релиза <span class="req-star">*</span></label><input data-date-role="release" id="r_releaseDate" onchange="isDraftDirty=true;" type="date"/></div><div class="form-group"><label>Оригинальная дата релиза</label><input data-date-role="original" id="r_originalReleaseDate" onchange="isDraftDirty=true;" type="date"/></div><div class="form-group"><label>UPC</label><input id="r_upc" oninput="isDraftDirty=true;" placeholder="UPC (если есть)" type="text"/></div></div>
+<div class="form-group"><label>Комментарий модератору</label><textarea id="r_comment" oninput="isDraftDirty=true;" placeholder="Ваши пожелания или комментарии..." rows="2"></textarea></div>
+</div>
+<div style="width: 300px;">
+<label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Обложка <span class="req-star">*</span></label>
+<div class="upload-box" id="r_cover_box" onclick="document.getElementById('r_cover').click()"><span class="text-sm" id="coverHint">Нажмите для загрузки<br/>3000x3000<br/><small style="display:block;margin-top:6px;color:var(--text-muted);font-size:11px;line-height:1.35;">Максимальный размер: 10 МБ</small></span><img class="upload-img hidden" id="coverPreview"/><input accept="image/*" class="hidden" id="r_cover" onchange="handleCoverUpload(this)" type="file"/></div>
+<div class="ai-usage-box ai-usage-box-cover">
+<label class="ai-usage-check">
+<input id="r_cover_ai" onchange="draftRelease.aiCoverUsed=this.checked; isDraftDirty=true;" type="checkbox"/>
+<span>
+<span class="ai-usage-title">Использование ИИ <span class="ai-usage-icon">✦</span></span>
+<span class="ai-usage-desc">Отметьте, если при создании обложки использовался искусственный интеллект</span>
+</span>
+</label>
+</div>
+</div>
+</div>
+<div class="hidden" id="tracklistArea" style="margin-top: 40px; max-width: 900px; border-top: 1px solid var(--border); padding-top: 32px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;"><div><h3>Трек-лист <span class="req-star">*</span></h3><p class="text-sm">Поддерживаемый формат: WAV (до 50МБ)</p></div><button class="btn-outline" onclick="document.getElementById('addAudioFile').click()" style="font-size: 12px; padding: 6px 12px;">+ Добавить аудиофайл</button><input accept=".wav,audio/wav,audio/x-wav,audio/wave,audio/vnd.wave" class="hidden" id="addAudioFile" multiple="" onchange="addTracks(this)" type="file"/></div>
+<div id="draftTracksList"></div>
+<div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+<button class="btn-outline hidden" id="saveDraftChangesBtn" onclick="saveDraftAsIs(true)" style="flex: 1; min-width: 200px; padding: 16px; font-size: 15px;">Сохранить как черновик</button>
+<button class="btn-primary" id="submitReleaseBtn" onclick="submitFinalRelease()" style="flex: 2; min-width: 250px; padding: 16px; font-size: 15px;">Отправить релиз на модерацию</button>
+</div>
+</div>
+</div>

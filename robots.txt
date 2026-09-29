@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: Sitemap: https://labelonline.github.io/AetherLab/sitemap.xml
+Sitemap: https://labelonline.github.io/AetherLab/sitemap.xml

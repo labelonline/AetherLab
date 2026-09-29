@@ -1,0 +1,62 @@
+<div id="sec-overview" class="view-section">
+    <div class="overview-dashboard">
+        <section class="overview-hero" aria-labelledby="overviewGreeting">
+            <div class="overview-hero-main">
+                <div>
+                    <div class="overview-eyebrow"><span class="overview-live-dot"></span><span id="overviewEyebrow">AetherLab Dashboard</span></div>
+                    <h2 class="overview-greeting" id="overviewGreeting">Добро пожаловать</h2>
+                    <div class="overview-subtitle" id="overviewSubtitle">Ваш каталог обновляется в реальном времени.</div>
+                </div>
+                <div class="overview-clock" aria-live="polite">
+                    <div class="overview-clock-time" id="overviewClockTime">--:--:--</div>
+                    <div class="overview-clock-date" id="overviewClockDate">—</div>
+                    <div class="overview-clock-meta"><span class="overview-clock-sync" id="overviewClockSyncDot"></span><span id="overviewClockSyncText">Синхронизация времени…</span><span>•</span><span id="overviewClockZone">—</span></div>
+                </div>
+            </div>
+            <div class="overview-actions">
+                <button type="button" class="btn-primary overview-action" onclick="startNewRelease()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span id="overviewActionRelease">Новый релиз</span></button>
+                <button type="button" class="btn-outline overview-action" onclick="navCatalog('all')"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span id="overviewActionCatalog">Каталог</span></button>
+                <button type="button" class="btn-outline overview-action" onclick="nav('news')"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span id="overviewActionNews">Новости</span></button>
+                <button type="button" class="btn-outline overview-action" onclick="nav(currentUser && currentUser.role==='Administrator' ? 'adminChats' : 'userChat')"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg><span id="overviewActionSupport">Поддержка</span></button>
+            </div>
+        </section>
+
+        <section class="overview-stats" id="dashboardStats" aria-label="Статистика релизов"></section>
+
+        <div class="overview-grid">
+            <section class="overview-panel">
+                <div class="overview-panel-head">
+                    <div><h3 class="overview-panel-title" id="overviewNextHeading">Следующий релиз</h3><div class="overview-panel-caption" id="overviewNextCaption">Ближайший принятый релиз по дате выхода.</div></div>
+                    <button type="button" class="overview-panel-link" onclick="navCatalog('all')" id="overviewCatalogLink">Весь каталог</button>
+                </div>
+                <div id="overviewNextRelease"></div>
+            </section>
+            <section class="overview-panel">
+                <div class="overview-panel-head">
+                    <div><h3 class="overview-panel-title" id="overviewAttentionHeading">Требует внимания</h3><div class="overview-panel-caption" id="overviewAttentionCaption">Задачи, которые можно закрыть прямо сейчас.</div></div>
+                </div>
+                <div class="overview-attention-list" id="overviewAttention"></div>
+            </section>
+        </div>
+
+        <div class="overview-lower-grid">
+            <section class="overview-panel">
+                <div class="overview-panel-head">
+                    <div><h3 class="overview-panel-title" id="overviewActivityHeading">Последняя активность</h3><div class="overview-panel-caption" id="overviewActivityCaption">Текущие статусы последних релизов.</div></div>
+                </div>
+                <div class="overview-activity-list" id="overviewActivity"></div>
+            </section>
+            <section class="overview-panel">
+                <div class="overview-panel-head">
+                    <div><h3 class="overview-panel-title" id="overviewNewsHeading">Последние новости</h3><div class="overview-panel-caption" id="overviewNewsCaption">Свежие публикации команды AetherLab.</div></div>
+                    <button type="button" class="overview-panel-link" onclick="nav('news')" id="overviewAllNews">Все новости</button>
+                </div>
+                <div class="overview-news-list" id="overviewLatestNews"></div>
+            </section>
+        </div>
+
+        <section class="overview-panel" id="overviewFinancePanel">
+            <div id="overviewFinanceRecent"></div>
+        </section>
+    </div>
+</div>
