@@ -2156,6 +2156,30 @@
 #btn-financialReports.aether-finance-locked:hover{opacity:.58;transform:none!important;}
 #btn-financialReports:not(.aether-finance-locked) .ico{color:#fff;background:rgba(255,255,255,.08);}
 .finance-shell{max-width:1180px;}
+.finance-overview-recent{margin-top:34px;max-width:1180px;}
+.finance-overview-title{font-size:18px;font-weight:800;letter-spacing:-.015em;margin:0 0 13px;color:var(--text-main);}
+.finance-overview-card{
+    position:relative;display:flex;align-items:center;gap:14px;
+    width:min(100%,720px);padding:15px 17px;border-radius:20px;
+    border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);
+    box-shadow:0 14px 34px rgba(0,0,0,.18);cursor:default;user-select:none;
+}
+.finance-overview-icon{
+    width:46px;height:46px;border-radius:15px;display:grid;place-items:center;flex:0 0 auto;
+    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);color:#dfe5ef;
+}
+.finance-overview-icon svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.finance-overview-main{min-width:0;flex:1;}
+.finance-overview-quarter{font-size:15px;font-weight:800;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.finance-overview-meta{font-size:11px;color:var(--text-muted);margin-top:5px;line-height:1.45;}
+.finance-overview-badge{font-size:11px;font-weight:750;color:#cfd4de;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);white-space:nowrap;}
+.finance-overview-warning{margin-top:11px;max-width:720px;color:#ff5d62;font-size:12px;font-weight:700;line-height:1.55;}
+.finance-overview-empty{width:min(100%,720px);padding:16px 18px;border-radius:18px;border:1px dashed rgba(255,255,255,.10);color:var(--text-muted);background:rgba(255,255,255,.02);font-size:12px;}
+@media(max-width:640px){
+    .finance-overview-card{align-items:flex-start;flex-wrap:wrap;}
+    .finance-overview-badge{margin-left:60px;}
+}
+
 .finance-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;}
 .finance-topbar h2{font-size:28px;font-weight:800;letter-spacing:-.03em;margin:0 0 6px;}
 .finance-topbar p{margin:0;color:var(--text-muted);line-height:1.55;}
@@ -2444,6 +2468,7 @@
             <div id="sec-overview" class="view-section">
                 <p class="text-sm" id="overviewDesc">Статистика по вашим релизам</p>
                 <div class="stat-grid" id="dashboardStats"></div>
+                <div id="overviewFinanceRecent"></div>
             </div>
             <div id="sec-catalog" class="view-section hidden">
                 <div class="form-group" style="max-width: 500px; margin-bottom: 24px;">
@@ -4725,6 +4750,7 @@
         list = list.filter(r => !r.isDeleted && r.status !== 'Черновик'); 
         const mod = list.filter(r => r.status === 'Модерация').length; const ok = list.filter(r => r.status === 'Одобрен').length; const rej = list.filter(r => r.status === 'Отклонён').length;
         document.getElementById('dashboardStats').innerHTML = `<div class="stat-card"><div class="stat-num" style="color: var(--warning);">${mod}</div><div class="stat-label">На модерации</div></div><div class="stat-card"><div class="stat-num" style="color: var(--success);">${ok}</div><div class="stat-label">Принятых</div></div><div class="stat-card"><div class="stat-num" style="color: var(--danger);">${rej}</div><div class="stat-label">Отклонённых</div></div>`;
+        try { if(typeof window.renderOverviewFinancePreview === 'function') window.renderOverviewFinancePreview(); } catch(e) {}
     }
     function getChat(email) { return normalizeChat(appState.chats[safeChatKey(email)]); }
     function renderUserChat() {
@@ -8939,7 +8965,7 @@ function renderCard(r, isAdmin) {
             rateFixed:'Курс зафиксирован при публикации', locked:'Упс! Этот раздел ещё не доработан. Пожалуйста, дождитесь его открытия.',
             onlyMainUpload:'Загрузка и удаление отчётов доступны только главному администратору.', amountColumnMissing:'Не удалось определить колонку с суммой в евро.',
             sheetLibraryMissing:'Модуль XLSX не загрузился. Для Excel-файлов обновите страницу и попробуйте снова.', unknownCabinet:'Неизвестный кабинет', allReport:'Полный отчёт', source:'Источник',
-            cancelDraftConfirm:'Отменить редактирование этого загруженного отчёта? Несохранённый черновик будет удалён.', currencyNotice:'Суммы рассчитываются из строк отчёта, сопоставленных с релизами AetherLab. Строки без точного совпадения не попадают в систему.'
+            cancelDraftConfirm:'Отменить редактирование этого загруженного отчёта? Несохранённый черновик будет удалён.', currencyNotice:'Суммы рассчитываются из строк отчёта, сопоставленных с релизами AetherLab. Строки без точного совпадения не попадают в систему.', recentReports:'Недавние отчёты:', recentReportType:'Финансовый отчёт', recentReportHint:'Чтобы увидеть сумму и скачать отчёт нужно зайти в раздел Финансовые отчёты.'
         },
         en: {
             title:'Financial Reports', intro:'Published financial reports and totals for releases available to your account are shown here.',
@@ -8956,7 +8982,7 @@ function renderCard(r, isAdmin) {
             rateFixed:'Rate fixed at publication', locked:'Oops! This section is still under development. Please wait until it becomes available.',
             onlyMainUpload:'Only the Main Administrator can upload and delete reports.', amountColumnMissing:'The EUR amount column could not be detected.',
             sheetLibraryMissing:'The XLSX module did not load. Refresh the page and try the Excel file again.', unknownCabinet:'Unknown account', allReport:'Full report', source:'Source',
-            cancelDraftConfirm:'Cancel editing this uploaded report? The unsent draft will be discarded.', currencyNotice:'Totals are calculated only from report rows matched to AetherLab releases. Rows without an exact match are not added.'
+            cancelDraftConfirm:'Cancel editing this uploaded report? The unsent draft will be discarded.', currencyNotice:'Totals are calculated only from report rows matched to AetherLab releases. Rows without an exact match are not added.', recentReports:'Recent reports:', recentReportType:'Financial report', recentReportHint:'To see the amount and download the report, go to the Financial Reports section.'
         },
         uk: {
             title:'Фінансові звіти', intro:'Тут відображаються опубліковані фінансові звіти та суми за релізами, доступними вашому кабінету.',
@@ -8973,7 +8999,7 @@ function renderCard(r, isAdmin) {
             rateFixed:'Курс зафіксовано під час публікації', locked:'Упс! Цей розділ ще не допрацьований. Будь ласка, дочекайтеся його відкриття.',
             onlyMainUpload:'Завантажувати та видаляти звіти може лише Головний адміністратор.', amountColumnMissing:'Не вдалося визначити колонку із сумою в євро.',
             sheetLibraryMissing:'Модуль XLSX не завантажився. Оновіть сторінку та спробуйте Excel-файл ще раз.', unknownCabinet:'Невідомий кабінет', allReport:'Повний звіт', source:'Джерело',
-            cancelDraftConfirm:'Скасувати редагування цього завантаженого звіту? Ненадіслану чернетку буде видалено.', currencyNotice:'Суми обчислюються лише з рядків звіту, зіставлених із релізами AetherLab. Рядки без точного збігу не додаються.'
+            cancelDraftConfirm:'Скасувати редагування цього завантаженого звіту? Ненадіслану чернетку буде видалено.', currencyNotice:'Суми обчислюються лише з рядків звіту, зіставлених із релізами AetherLab. Рядки без точного збігу не додаються.', recentReports:'Нещодавні звіти:', recentReportType:'Фінансовий звіт', recentReportHint:'Щоб побачити суму та завантажити звіт, потрібно перейти до розділу «Фінансові звіти».'
         }
     };
 
@@ -9277,6 +9303,32 @@ function renderCard(r, isAdmin) {
     function visibleRows(report,user=currentUser){ return flattenFinanceRows(report).filter(r=>rowVisibleToUser(r,user)); }
     function visibleReports(){ return financeState.reports.map(report=>({report,rows:visibleRows(report)})).filter(x=>x.rows.length>0 || (typeof isMainAdministrator==='function'&&isMainAdministrator(currentUser))); }
 
+    function renderOverviewFinancePreview(){
+        const area=document.getElementById('overviewFinanceRecent');
+        if(!area) return;
+        if(!currentUser){ area.innerHTML=''; return; }
+        const vr=visibleReports();
+        const latest=vr.length ? vr[0].report : null;
+        if(!latest){
+            area.innerHTML=`<div class="finance-overview-recent"><h3 class="finance-overview-title">${fesc(ft('recentReports'))}</h3><div class="finance-overview-empty">${fesc(ft('noReports'))}</div></div>`;
+            return;
+        }
+        const published=latest.publishedAt||latest.createdAt||latest.loadedAt;
+        area.innerHTML=`<div class="finance-overview-recent">
+            <h3 class="finance-overview-title">${fesc(ft('recentReports'))}</h3>
+            <div class="finance-overview-card" aria-label="${fattr(ft('recentReportType'))}">
+                <div class="finance-overview-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5"/><path d="M10 13h5M10 17h5"/></svg></div>
+                <div class="finance-overview-main">
+                    <div class="finance-overview-quarter">${fesc(latest.quarter||ft('recentReportType'))}</div>
+                    <div class="finance-overview-meta">${fesc(ft('created'))}: ${fesc(fDateTime(published))}</div>
+                </div>
+                <div class="finance-overview-badge">${fesc(ft('recentReportType'))}</div>
+            </div>
+            <div class="finance-overview-warning">${fesc(ft('recentReportHint'))}</div>
+        </div>`;
+    }
+    window.renderOverviewFinancePreview=renderOverviewFinancePreview;
+
     function localCurrencyForLang(){ return financeLang()==='uk'?'UAH':financeLang()==='en'?'USD':'RUB'; }
     function localAmountHTML(report,eur){
         const cur=localCurrencyForLang();
@@ -9352,6 +9404,7 @@ function renderCard(r, isAdmin) {
                 const data=snapshot.val()||{};
                 financeState.reports=Object.values(data).filter(Boolean).sort((a,b)=>Number(b.publishedAt||0)-Number(a.publishedAt||0));
                 syncFinanceNav();
+                try{renderOverviewFinancePreview();}catch(e){}
                 try{if(currentSection==='financialReports')renderFinancialReports();}catch(e){}
             },err=>console.error('Finance reports:',err));
         }catch(e){console.error('Finance listener:',e);}
@@ -9625,6 +9678,7 @@ function renderCard(r, isAdmin) {
         }
         updateLockedModalCopy(); syncFinanceNav();
         bindFinanceReportsForCurrentUser();
+        try{renderOverviewFinancePreview();}catch(e){}
 
         // Keep the button/section synchronized after login, role refresh and language restoration.
         try{
