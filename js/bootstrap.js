@@ -14,7 +14,7 @@
         app.appendChild(sideWrap.firstElementChild); app.appendChild(content); root.appendChild(app); root.insertAdjacentHTML('beforeend',footerHtml);
 
         const scripts=[
-            'js/config.js','js/firebase.js','js/core/ui.js','js/core/data.js','js/core/state.js','js/core/auth.js','js/modules/content.js','js/modules/dashboard.js',
+            'js/config.js','js/firebase.js','js/core/ui.js','js/core/data.js','js/core/state.js','js/core/auth.js','js/sidebar.js','js/modules/content.js','js/modules/dashboard.js',
             'js/modules/chat-admin.js','js/modules/releases.js','js/modules/moderation.js','js/modules/promo.js','js/modules/date-picker.js','js/modules/karaoke.js','js/modules/audio.js',
             'js/modules/questionnaires.js','js/modules/support.js','js/router.js','js/modules/ai.js','js/i18n.js','js/modules/finance.js','js/firebase-sync.js'
         ];

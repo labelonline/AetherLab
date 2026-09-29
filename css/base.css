@@ -986,3 +986,145 @@
     
 
 
+
+
+/* ===== Collapsible desktop sidebar + layout overflow guard ===== */
+.content{
+    min-width:0;
+    overflow-x:hidden;
+}
+.sidebar{
+    position:relative;
+    flex:0 0 auto;
+    transition:width .22s ease,padding .22s ease,transform .3s ease;
+}
+.sidebar-collapse-btn{
+    width:30px;
+    height:30px;
+    min-width:30px;
+    padding:0;
+    display:grid;
+    place-items:center;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.05);
+    color:#cfd7e8;
+    box-shadow:none;
+    cursor:pointer;
+    flex:0 0 auto;
+}
+.sidebar-collapse-btn:hover{
+    color:#fff;
+    background:rgba(255,255,255,.09);
+    border-color:rgba(255,255,255,.17);
+}
+.sidebar-collapse-btn svg{
+    width:16px;
+    height:16px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    transition:transform .22s ease;
+}
+.sidebar.collapsed{
+    width:78px!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+}
+.sidebar.collapsed .portal-brand{
+    padding-left:0;
+    padding-right:0;
+    flex-direction:column;
+    justify-content:center;
+    gap:8px;
+}
+.sidebar.collapsed .portal-brand-title,
+.sidebar.collapsed #bellWrapDesktop{
+    display:none!important;
+}
+.sidebar.collapsed .sidebar-collapse-btn svg{
+    transform:rotate(180deg);
+}
+.sidebar.collapsed .menu-btn,
+.sidebar.collapsed .nav-parent{
+    width:100%;
+    min-width:0;
+    padding-left:8px!important;
+    padding-right:8px!important;
+    justify-content:center!important;
+}
+.sidebar.collapsed .mil{
+    width:100%;
+    justify-content:center;
+    gap:0!important;
+}
+.sidebar.collapsed .mil > span:not(.ico),
+.sidebar.collapsed .nav-chevron,
+.sidebar.collapsed .menu-badge,
+.sidebar.collapsed .nav-unread-dot,
+.sidebar.collapsed .chat-unread-indicator,
+.sidebar.collapsed .aether-finance-lock{
+    display:none!important;
+}
+.sidebar.collapsed .nav-group-items{
+    display:none!important;
+}
+.sidebar.collapsed .ico{
+    margin:0!important;
+}
+.sidebar.collapsed .profile-card{
+    padding:8px;
+    justify-content:center;
+}
+.sidebar.collapsed .profile-card > div{
+    justify-content:center;
+    gap:0!important;
+}
+.sidebar.collapsed .profile-card > div > div:not(.avatar-wrap),
+.sidebar.collapsed .profile-card > svg{
+    display:none!important;
+}
+.sidebar.collapsed .avatar-wrap{
+    width:36px;
+    height:36px;
+}
+.sidebar.collapsed .aether-bottom-actions{
+    display:block;
+}
+.sidebar.collapsed .aether-bottom-actions > .menu-btn{
+    width:100%;
+    justify-content:center!important;
+}
+.sidebar.collapsed .aether-language-switch{
+    display:none!important;
+}
+@media(max-width:768px){
+    .sidebar-collapse-btn{display:none!important;}
+    .sidebar.collapsed{
+        width:280px!important;
+        padding:18px 14px!important;
+    }
+    .sidebar.collapsed .portal-brand{
+        flex-direction:row;
+        justify-content:flex-start;
+        gap:12px;
+    }
+    .sidebar.collapsed .portal-brand-title,
+    .sidebar.collapsed #bellWrapDesktop{
+        display:initial!important;
+    }
+    .sidebar.collapsed .mil > span:not(.ico),
+    .sidebar.collapsed .nav-chevron,
+    .sidebar.collapsed .menu-badge,
+    .sidebar.collapsed .aether-finance-lock{
+        display:initial!important;
+    }
+    .sidebar.collapsed .nav-group-items:not(.hidden){
+        display:flex!important;
+    }
+    .sidebar.collapsed .aether-language-switch{
+        display:block!important;
+    }
+}

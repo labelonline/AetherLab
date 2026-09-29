@@ -21,3 +21,10 @@
 
 ## Important
 - This refactor intentionally preserves the existing authentication/business behavior for compatibility. The old password-based client authentication is still present in `js/core/auth.js`; migrating to Firebase Authentication remains a separate security task.
+
+## UI fix — Overview + sidebar
+- Исправлен чёрный текст в интерактивных карточках Overview.
+- Новости, активность и задачи теперь раскладываются по отдельным строкам и не выходят за границы карточек.
+- Добавлено аккуратное обрезание длинных описаний с многоточием.
+- Убран горизонтальный overflow Dashboard.
+- Добавлено сворачивание боковой панели до режима «только иконки» с сохранением состояния в браузере.
