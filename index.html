@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kite</title>
+    <title>AetherLab</title>
 
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <meta name="description" content="Kite Label — личный кабинет для артистов, загрузки релизов, модерации музыки, новостей и инструкций.">
-<meta name="keywords" content="Kite, Kite Label, kite label, кайт, Кайт, кайт лейбл, Кайт лейбл, музыкальный лейбл, дистрибуция музыки, кабинет артиста">
+    <meta name="description" content="AetherLab Label — личный кабинет для артистов, загрузки релизов, модерации музыки, новостей и инструкций.">
+<meta name="keywords" content="AetherLab, AetherLab Label, kite label, кайт, Кайт, кайт лейбл, Кайт лейбл, музыкальный лейбл, дистрибуция музыки, кабинет артиста">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://https://labelonline.github.io/account//">
 
@@ -811,7 +811,7 @@
         renderPromoLinks();
     }
 
-    /* ===== Kite custom date picker ===== */
+    /* ===== AetherLab custom date picker ===== */
         .aether-native-date-hidden{
             position:absolute!important;
             opacity:0!important;
@@ -1041,7 +1041,7 @@
         @media(max-width:768px){.karaoke-viewer{height:300px}.karaoke-view-line{font-size:20px}.karaoke-line{flex-direction:column}.karaoke-line-time{min-width:0}.aether-player-main{gap:10px}.aether-player-time{min-width:76px;font-size:12px}.aether-player-bottom{align-items:stretch}.aether-player-rate{width:100%;justify-content:space-between}.karaoke-mobile-timecode{display:block}}
 
 
-        /* ===== Global Kite audio player replacement ===== */
+        /* ===== Global AetherLab audio player replacement ===== */
         audio.aether-audio-native-hidden{
             position:absolute!important;
             opacity:0!important;
@@ -1081,7 +1081,7 @@
 
     
 
-        /* ===== Kite release cards / tracklist redesign ===== */
+        /* ===== AetherLab release cards / tracklist redesign ===== */
         .release-card-pro{
             display:grid;
             grid-template-columns:auto 1fr auto;
@@ -1264,7 +1264,7 @@
 
 
 
-        /* ===== Kite big update polish ===== */
+        /* ===== AetherLab big update polish ===== */
         .content{scroll-behavior:smooth;}
         .nav-group-items{padding-left:0!important;}
         .sidebar .ico{width:26px!important;height:26px!important;border-radius:9px!important;}
@@ -1670,7 +1670,7 @@
 
     
 
-/* ===== Kite Support / FAQ / Tickets ===== */
+/* ===== AetherLab Support / FAQ / Tickets ===== */
 .support-shell{display:flex;flex-direction:column;gap:18px;}
 .support-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:4px;}
 .support-topbar h2{font-size:28px;line-height:1.1;font-weight:800;margin:0;}
@@ -1714,7 +1714,7 @@
 
 
 
-        /* ===== Kite calendar update: компактный календарь, ограничения дат, выбор месяца/года ===== */
+        /* ===== AetherLab calendar update: компактный календарь, ограничения дат, выбор месяца/года ===== */
         .release-date-grid{
             display:grid;
             grid-template-columns:repeat(3,minmax(0,1fr));
@@ -1948,7 +1948,7 @@
     <div class="mobile-header hidden" id="mobHeader">
         <div style="display: flex; align-items: center; gap: 16px;">
             <button class="hamburger" onclick="document.querySelector('.sidebar').classList.add('open')">☰</button>
-            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kite</h2>
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">AetherLab</h2>
         </div>
         <div class="bell-wrap" onclick="showNotifications()">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bell-icon"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -1995,7 +1995,7 @@
     <div id="banView" class="overlay hidden" style="background: var(--bg-body); z-index: 9999;"><div style="text-align: center;"><h1 id="banTitleText" style="font-size: 32px; color: var(--danger);">Ваш кабинет заблокирован</h1><button class="btn-outline" onclick="UI.alert('Причина блокировки', currentUser.banReason)" style="margin: 20px 10px;">Узнать причину</button><button class="btn-primary" onclick="logout()" style="margin: 20px 10px;">Выйти</button></div></div>
     <div id="authView" class="overlay hidden" style="background: var(--bg-body); z-index: 9999;">
         <div class="dialog" style="border: none; background: transparent; max-width: 360px;">
-            <div style="text-align:center;margin-bottom:40px;"><h2 style="font-size:32px;letter-spacing:0;font-weight:800;margin:0 auto;">Kite</h2></div>
+            <div style="text-align:center;margin-bottom:40px;"><h2 style="font-size:32px;letter-spacing:0;font-weight:800;margin:0 auto;">AetherLab</h2></div>
             <div id="regFields" class="hidden"><div class="form-group"><input type="text" id="regLogin" placeholder="Логин"></div></div>
             <div class="form-group"><input type="text" id="authEmail" placeholder="Логин" autocomplete="username" onkeypress="if(event.key === 'Enter') processAuth()"></div>
             <div class="form-group"><input type="password" id="authPassword" placeholder="Пароль" onkeypress="if(event.key === 'Enter') processAuth()"></div>
@@ -2011,7 +2011,7 @@
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:22px;">
                 <div>
                     <h2 style="font-size:28px;font-weight:800;letter-spacing:-.03em;margin:0 0 8px;">Анкета для вступления в лейбл</h2>
-                    <p class="text-sm" style="line-height:1.55;">Заполните данные, чтобы команда Kite могла рассмотреть вашу заявку.</p>
+                    <p class="text-sm" style="line-height:1.55;">Заполните данные, чтобы команда AetherLab могла рассмотреть вашу заявку.</p>
                 </div>
             </div>
             <div class="form-group"><label>Ваш творческий псевдоним (никнейм)<span class="req-star">*</span></label><input type="text" id="qArtistName" autocomplete="nickname" placeholder="Например: diviaxel"></div>
@@ -2020,7 +2020,7 @@
             <div class="form-group"><label>Ссылки на все ваши соц.сети<span class="req-star">*</span></label><textarea id="qSocialLinks" rows="3" placeholder="Instagram, TikTok, Telegram, YouTube, VK и другие ссылки..."></textarea></div>
             <div class="form-group"><label>Ссылки на две любых музыкальных платформы<span class="req-star">*</span></label><textarea id="qMusicLinks" rows="3" placeholder="Например: Spotify и Яндекс Музыка / Apple Music / VK Музыка..."></textarea></div>
             <div class="form-group"><label>Описание вас, как артиста<span class="req-star">*</span></label><textarea id="qArtistDescription" rows="5" placeholder="Расскажите о достижениях, жанрах, стилях, опыте и всём, что поможет нам понять вас как артиста."></textarea></div>
-            <div class="form-group"><label>Почему вы выбрали именно наш лейбл<span class="req-star">*</span></label><textarea id="qWhyKite" rows="3" placeholder="Почему вы хотите работать именно с Kite?"></textarea></div>
+            <div class="form-group"><label>Почему вы выбрали именно наш лейбл<span class="req-star">*</span></label><textarea id="qWhyAetherLab" rows="3" placeholder="Почему вы хотите работать именно с AetherLab?"></textarea></div>
             <div class="form-group"><label>Ваша почта для связи<span class="req-star">*</span></label><input type="email" id="qEmail" autocomplete="email" placeholder="example@email.com"></div>
             <div class="form-group"><label>Ваш Telegram-username для связи<span class="req-star">*</span></label><input type="text" id="qTelegram" autocomplete="off" placeholder="@username или https://t.me/username"></div>
             <button class="btn-primary" style="width:100%;margin-top:8px;" onclick="submitQuestionnaire()">Отправить анкету</button>
@@ -2030,9 +2030,9 @@
     <div id="appView" class="app hidden">
         <div class="sidebar">
             <div class="portal-brand">
-                <div class="logo-mark">KT</div>
+                <div class="logo-mark">AL</div>
                 <div style="min-width:0; flex:1;">
-                    <div class="portal-brand-title">Kite</div>
+                    <div class="portal-brand-title">AetherLab</div>
                     
                 </div>
                 <div class="bell-wrap hidden" id="bellWrapDesktop" onclick="showNotifications()" title="Уведомления">
@@ -2121,7 +2121,7 @@
                     <div>
                         <h2>Временно недоступно</h2>
                         <p>Пишите в Telegram.</p>
-                        <a class="telegram-btn" href="https://t.me/Kite_Online" target="_blank" rel="noopener noreferrer">Написать</a>
+                        <a class="telegram-btn" href="https://t.me/AetherLab_Online" target="_blank" rel="noopener noreferrer">Написать</a>
                     </div>
                 </div>
                 <div class="hidden" aria-hidden="true">
@@ -2132,17 +2132,17 @@
             </div>
 
             <div id="sec-news" class="view-section hidden">
-                <div class="section-kicker">Kite • Updates</div>
+                <div class="section-kicker">AetherLab • Updates</div>
                 <p class="text-sm" style="margin-bottom:16px;">Новости от администрации отображаются здесь для всех кабинетов.</p>
                 <div id="newsList"></div>
             </div>
             <div id="sec-guide" class="view-section hidden">
-                <div class="section-kicker">Kite • Help Center</div>
+                <div class="section-kicker">AetherLab • Help Center</div>
                 <p class="text-sm" style="margin-bottom:16px;">Инструкции по работе с релизами, черновиками и модерацией.</p>
                 <div id="guideList"></div>
             </div>
             <div id="sec-karaoke" class="view-section hidden">
-                <div class="section-kicker">Kite • Karaoke Text</div>
+                <div class="section-kicker">AetherLab • Karaoke Text</div>
                 <p class="text-sm" style="margin-bottom:16px;">Создайте файл с таймкодами для караоке-текста или проверьте уже готовый файл вместе с аудио.</p>
                 <div class="karaoke-mode-grid">
                     <div class="karaoke-mode-card" id="karaokeModeCatalog" onclick="karaokeSetMode('catalog')"><h3>Трек из каталога</h3><p>Выберите релиз и трек из вашего кабинета. Данные подтянутся автоматически, если они уже заполнены.</p></div>
@@ -2153,7 +2153,7 @@
             </div>
 
             <div id="sec-promoLinks" class="view-section hidden">
-                <div class="section-kicker">Kite • Marketing</div>
+                <div class="section-kicker">AetherLab • Marketing</div>
                 <div id="promoLinksArea"></div>
             </div>
 
@@ -2162,7 +2162,7 @@
                     <div>
                         <h2>Временно недоступно</h2>
                         <p>Пишите в Telegram.</p>
-                        <a class="telegram-btn" href="https://t.me/Kite_Online" target="_blank" rel="noopener noreferrer">Написать</a>
+                        <a class="telegram-btn" href="https://t.me/AetherLab_Online" target="_blank" rel="noopener noreferrer">Написать</a>
                     </div>
                 </div>
                 <div class="hidden" aria-hidden="true">
@@ -2962,7 +2962,7 @@
             if(updatedUser) {
                 currentUser = updatedUser;
                 if(currentUser.email === ADMIN_EMAIL) currentUser.role = 'Administrator';
-                saveKiteSession(currentUser);
+                saveAetherLabSession(currentUser);
                 if(currentSection === 'userChat' && currentUser.unreadAdminMsg) { currentUser.unreadAdminMsg = false; saveUserDB(currentUser); }
                 if(currentSection === 'adminChats' && activeAdminChatUser) clearArtistChatUnread(activeAdminChatUser, true);
                 document.getElementById('userAvatar').src = currentUser.avatar || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
@@ -3099,27 +3099,27 @@
     const KITE_SESSION_MAX_IDLE = 60 * 1000;
     let kiteSessionHeartbeatTimer = null;
 
-    function touchKiteSession() {
+    function touchAetherLabSession() {
         try { localStorage.setItem(KITE_SESSION_ACTIVITY_KEY, String(Date.now())); } catch(e) {}
     }
 
-    function saveKiteSession(user) {
+    function saveAetherLabSession(user) {
         try {
             if(user && user.id) {
                 const payload = JSON.stringify({ id: user.id, email: user.email || '', savedAt: Date.now() });
                 sessionStorage.setItem(KITE_SESSION_KEY, payload);
                 localStorage.setItem(KITE_SESSION_KEY, payload);
-                touchKiteSession();
+                touchAetherLabSession();
             }
         } catch(e) { console.warn('Не удалось сохранить сессию:', e); }
     }
 
-    function clearKiteSession() {
+    function clearAetherLabSession() {
         try { sessionStorage.removeItem(KITE_SESSION_KEY); } catch(e) {}
         try { localStorage.removeItem(KITE_SESSION_KEY); localStorage.removeItem(KITE_SESSION_ACTIVITY_KEY); } catch(e) {}
     }
 
-    function getSavedKiteSession() {
+    function getSavedAetherLabSession() {
         try {
             const localRaw = localStorage.getItem(KITE_SESSION_KEY);
             const sessionRaw = sessionStorage.getItem(KITE_SESSION_KEY);
@@ -3135,11 +3135,11 @@
         } catch(e) { return null; }
     }
 
-    function startKiteSessionHeartbeat() {
+    function startAetherLabSessionHeartbeat() {
         if(kiteSessionHeartbeatTimer) clearInterval(kiteSessionHeartbeatTimer);
-        touchKiteSession();
+        touchAetherLabSession();
         kiteSessionHeartbeatTimer = setInterval(() => {
-            if(currentUser) touchKiteSession();
+            if(currentUser) touchAetherLabSession();
         }, 5000);
     }
 
@@ -3205,15 +3205,15 @@
         return findUserByEmailFast(email);
     }
 
-    async function restoreKiteSession() {
-        const saved = getSavedKiteSession();
+    async function restoreAetherLabSession() {
+        const saved = getSavedAetherLabSession();
         if(!saved || currentUser) {
             if(!currentUser) showAuthViewIfLoggedOut();
             return;
         }
         const u = await findUserByIdOrEmailFast(saved.id, saved.email);
         if(!u) {
-            clearKiteSession();
+            clearAetherLabSession();
             showAuthViewIfLoggedOut();
             return;
         }
@@ -3258,7 +3258,7 @@
                     }
                     u.role = 'Administrator';
                     currentUser = u;
-                    saveKiteSession(currentUser);
+                    saveAetherLabSession(currentUser);
                     recordDevice(currentUser);
                     startApp();
                     return;
@@ -3267,7 +3267,7 @@
                 if(u && u.pass === pass) {
                     currentUser = u;
                     if(currentUser.email === ADMIN_EMAIL) currentUser.role = 'Administrator';
-                    saveKiteSession(currentUser);
+                    saveAetherLabSession(currentUser);
                     recordDevice(currentUser);
                     startApp();
                     return;
@@ -3302,7 +3302,7 @@
                 upsertLocalUserFast(newUser);
                 saveUserDB(newUser);
                 currentUser = newUser;
-                saveKiteSession(currentUser);
+                saveAetherLabSession(currentUser);
                 startApp();
             }
         } catch(err) {
@@ -3315,8 +3315,8 @@
 
     
     function startApp() {
-        if(currentUser) saveKiteSession(currentUser);
-        startKiteSessionHeartbeat();
+        if(currentUser) saveAetherLabSession(currentUser);
+        startAetherLabSessionHeartbeat();
         if (currentUser.email === ADMIN_EMAIL) currentUser.role = 'Administrator';
         if(currentUser.isBanned) { 
             document.getElementById('banView').classList.remove('hidden'); 
@@ -3337,7 +3337,7 @@
         
         document.getElementById('userAvatar').src = currentUser.avatar || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
         collapseSidebarMenus();
-        if(typeof window.openKiteCurrentPath === 'function') window.openKiteCurrentPath();
+        if(typeof window.openAetherLabCurrentPath === 'function') window.openAetherLabCurrentPath();
         else nav('overview', true);
         checkNotifications();
         setTimeout(maybeShowFirstLoginPasswordChange, 350);
@@ -3352,9 +3352,9 @@
     window.addEventListener('resize', updateResponsiveHeader);
 
     function logout() {
-        clearKiteSession();
+        clearAetherLabSession();
         try {
-            if (typeof stopKiteSessionHeartbeat === 'function') stopKiteSessionHeartbeat();
+            if (typeof stopAetherLabSessionHeartbeat === 'function') stopAetherLabSessionHeartbeat();
         } catch(e) {}
         currentUser = null;
         try { history.replaceState(null, '', '/'); } catch(e) {}
@@ -3409,7 +3409,7 @@
                 updateCurrentUserLinkedEmail(oldEmail, newEmail);
                 currentUser.email = newEmail;
                 changed = true;
-                saveKiteSession(currentUser);
+                saveAetherLabSession(currentUser);
             }
             if(data.p && data.p !== currentUser.pass) { currentUser.pass = data.p; if(!currentUser.passwordHistory) currentUser.passwordHistory = []; currentUser.passwordHistory.push({pass: data.p, date: new Date().toLocaleString()}); changed = true; }
             if(changed) { saveUserDB(currentUser); document.getElementById('userNameDisplay').innerText = currentUser.login; UI.alert("Успешно", "Данные обновлены"); }
@@ -3428,7 +3428,7 @@
         if(!shouldShowFirstLoginPasswordChange() || document.getElementById('firstLoginPasswordModal')) return;
         document.body.insertAdjacentHTML('beforeend', `<div id="firstLoginPasswordModal" class="overlay" style="z-index:10005;">
             <div class="dialog" style="max-width:460px;">
-                <h2 style="font-size:28px;font-weight:800;margin-bottom:10px;">Приветствуем вас в лейбле Kite💙</h2>
+                <h2 style="font-size:28px;font-weight:800;margin-bottom:10px;">Приветствуем вас в лейбле AetherLab💙</h2>
                 <p class="text-sm" style="line-height:1.65;color:#d7deee;margin-bottom:18px;">Пожалуйста, придумайте новый пароль для вашего кабинета. Пароль, который был выдан при создании аккаунта, является временным и нужен только для первой активации доступа.</p>
                 <div class="form-group"><label>Новый пароль <span class="req-star">*</span></label><input type="password" id="firstLoginNewPassword" placeholder="Введите новый пароль" autocomplete="new-password"></div>
                 <div class="form-group"><label>Повторите пароль <span class="req-star">*</span></label><input type="password" id="firstLoginNewPassword2" placeholder="Повторите новый пароль" autocomplete="new-password"></div>
@@ -4253,7 +4253,7 @@
         renderUserChat();
         markAdminsUnreadForChat(currentUser.email);
         checkNotifications();
-        sendEmailNotification("Новое сообщение в поддержку Kite", `Артист ${currentUser.login} (${currentUser.email}) написал вам:\n\n"${msgText}"`);
+        sendEmailNotification("Новое сообщение в поддержку AetherLab", `Артист ${currentUser.login} (${currentUser.email}) написал вам:\n\n"${msgText}"`);
     }
     function renderAdminChatList() {
         const list = document.getElementById('adminChatUserList'); const searchVal = document.getElementById('adminChatSearch').value.toLowerCase();
@@ -4742,7 +4742,7 @@
         if(!getMultiVal('r_artist_container')) { document.getElementById('r_artist_container').classList.add('error-field'); hasError = true; }
         if(!draftRelease.coverFile) { document.getElementById('r_cover_box').classList.add('error-field'); hasError = true; }
         if(hasError) return UI.alert("Ошибка", "Заполните обязательные поля релиза.");
-        if(window.KiteValidateReleaseDates && !window.KiteValidateReleaseDates(true)) return;
+        if(window.AetherLabValidateReleaseDates && !window.AetherLabValidateReleaseDates(true)) return;
 
         const type = document.getElementById('r_type').value;
         if(draftRelease.tracks.length === 0) return UI.alert("Ошибка", "Добавьте трек");
@@ -5415,7 +5415,7 @@ function renderCard(r, isAdmin) {
         renderPromoLinks();
     }
 
-    /* ===== Kite custom date picker ===== */
+    /* ===== AetherLab custom date picker ===== */
     (function(){
         const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
         const monthShort = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
@@ -5695,7 +5695,7 @@ function renderCard(r, isAdmin) {
             return true;
         }
 
-        window.KiteValidateReleaseDates = function(showAlert = true){
+        window.AetherLabValidateReleaseDates = function(showAlert = true){
             const rel = document.getElementById('r_releaseDate');
             const orig = document.getElementById('r_originalReleaseDate');
             return validateOne(rel, showAlert) && validateOne(orig, showAlert);
@@ -5758,7 +5758,7 @@ function renderCard(r, isAdmin) {
             document.querySelectorAll('input[type="date"]').forEach(refreshNativeLimits);
             if(active && popover && !popover.classList.contains('hidden')) renderPicker();
         }, 60000);
-        window.KiteDatePickerInit = initAll;
+        window.AetherLabDatePickerInit = initAll;
     })();
 
 
@@ -6140,7 +6140,7 @@ function renderCard(r, isAdmin) {
     }
 
 
-    /* ===== Global Kite custom audio players ===== */
+    /* ===== Global AetherLab custom audio players ===== */
     function aetherAudioIcon(name){
         if(name === 'play') return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z" fill="currentColor" stroke="none"/></svg>';
         if(name === 'back') return '<svg viewBox="0 0 24 24"><path d="M11 8 7 12l4 4"/><path d="M7 12h10"/></svg>';
@@ -6261,7 +6261,7 @@ function renderCard(r, isAdmin) {
         const q = document.getElementById('questionnaireView');
         if(auth) auth.classList.add('hidden');
         if(q) q.classList.remove('hidden');
-        ['qArtistName','qFirstName','qLastName','qSocialLinks','qMusicLinks','qArtistDescription','qWhyKite','qEmail','qTelegram'].forEach(id => {
+        ['qArtistName','qFirstName','qLastName','qSocialLinks','qMusicLinks','qArtistDescription','qWhyAetherLab','qEmail','qTelegram'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.classList.remove('error-field');
         });
@@ -6292,10 +6292,10 @@ function renderCard(r, isAdmin) {
         const socialLinksEl = document.getElementById('qSocialLinks');
         const musicLinksEl = document.getElementById('qMusicLinks');
         const artistDescriptionEl = document.getElementById('qArtistDescription');
-        const whyKiteEl = document.getElementById('qWhyKite');
+        const whyAetherLabEl = document.getElementById('qWhyAetherLab');
         const emailEl = document.getElementById('qEmail');
         const telegramEl = document.getElementById('qTelegram');
-        const fields = [artistNameEl, firstNameEl, lastNameEl, socialLinksEl, musicLinksEl, artistDescriptionEl, whyKiteEl, emailEl, telegramEl];
+        const fields = [artistNameEl, firstNameEl, lastNameEl, socialLinksEl, musicLinksEl, artistDescriptionEl, whyAetherLabEl, emailEl, telegramEl];
         fields.forEach(el => el && el.classList.remove('error-field'));
         const artistName = (artistNameEl?.value || '').trim();
         const firstName = (firstNameEl?.value || '').trim();
@@ -6303,7 +6303,7 @@ function renderCard(r, isAdmin) {
         const socialLinks = (socialLinksEl?.value || '').trim();
         const musicLinks = (musicLinksEl?.value || '').trim();
         const artistDescription = (artistDescriptionEl?.value || '').trim();
-        const whyKite = (whyKiteEl?.value || '').trim();
+        const whyAetherLab = (whyAetherLabEl?.value || '').trim();
         const email = (emailEl?.value || '').toLowerCase().trim();
         const telegram = (telegramEl?.value || '').trim();
         let hasError = false;
@@ -6313,7 +6313,7 @@ function renderCard(r, isAdmin) {
         if(!socialLinks) { socialLinksEl && socialLinksEl.classList.add('error-field'); hasError = true; }
         if(!musicLinks) { musicLinksEl && musicLinksEl.classList.add('error-field'); hasError = true; }
         if(!artistDescription) { artistDescriptionEl && artistDescriptionEl.classList.add('error-field'); hasError = true; }
-        if(!whyKite) { whyKiteEl && whyKiteEl.classList.add('error-field'); hasError = true; }
+        if(!whyAetherLab) { whyAetherLabEl && whyAetherLabEl.classList.add('error-field'); hasError = true; }
         if(!email || !email.includes('@')) { emailEl && emailEl.classList.add('error-field'); hasError = true; }
         if(!telegram) { telegramEl && telegramEl.classList.add('error-field'); hasError = true; }
         if(hasError) return UI.alert('Ошибка', 'Заполните все обязательные поля анкеты.' );
@@ -6322,7 +6322,7 @@ function renderCard(r, isAdmin) {
         const oldText = btn ? btn.innerText : '';
         if(btn) { btn.disabled = true; btn.innerText = 'Отправка...'; }
         const id = 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-        const item = { id, artistName, firstName, lastName, socialLinks, musicLinks, artistDescription, whyKite, email, telegram, description: artistDescription, status: 'На проверке', createdAt: Date.now(), updatedAt: Date.now() };
+        const item = { id, artistName, firstName, lastName, socialLinks, musicLinks, artistDescription, whyAetherLab, email, telegram, description: artistDescription, status: 'На проверке', createdAt: Date.now(), updatedAt: Date.now() };
         try {
             appState.questionnaires = [item].concat((appState.questionnaires || []).filter(q => q.id !== id));
             await db.ref('questionnaires/' + id).set(item);
@@ -6392,7 +6392,7 @@ function renderCard(r, isAdmin) {
                 <div class="questionnaire-detail-box" style="margin-bottom:18px;"><span>Соц.сети</span><strong style="white-space:pre-wrap;font-weight:600;line-height:1.6;">${escapeHTML(q.socialLinks || '—')}</strong></div>
                 <div class="questionnaire-detail-box" style="margin-bottom:18px;"><span>Музыкальные платформы</span><strong style="white-space:pre-wrap;font-weight:600;line-height:1.6;">${escapeHTML(q.musicLinks || '—')}</strong></div>
                 <div class="questionnaire-detail-box" style="margin-bottom:18px;"><span>Описание артиста</span><strong style="white-space:pre-wrap;font-weight:600;line-height:1.6;">${escapeHTML(q.artistDescription || q.description || '—')}</strong></div>
-                <div class="questionnaire-detail-box" style="margin-bottom:18px;"><span>Почему Kite</span><strong style="white-space:pre-wrap;font-weight:600;line-height:1.6;">${escapeHTML(q.whyKite || '—')}</strong></div>
+                <div class="questionnaire-detail-box" style="margin-bottom:18px;"><span>Почему AetherLab</span><strong style="white-space:pre-wrap;font-weight:600;line-height:1.6;">${escapeHTML(q.whyAetherLab || '—')}</strong></div>
                 <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;">
                     <button class="btn-danger" onclick="setQuestionnaireStatus('${escapeAttr(q.id)}','Отклонена')">Отклонить</button>
                     <button class="btn-success" onclick="openQuestionnaireCabinetDialog('${escapeAttr(q.id)}')">Принять</button>
@@ -6405,7 +6405,7 @@ function renderCard(r, isAdmin) {
         if(modal) modal.remove();
     }
 
-    function generateKitePassword(length = 16) {
+    function generateAetherLabPassword(length = 16) {
         const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?';
         const randomValues = new Uint32Array(length);
         if(window.crypto && crypto.getRandomValues) crypto.getRandomValues(randomValues);
@@ -6427,7 +6427,7 @@ function renderCard(r, isAdmin) {
         UI.prompt('Открытие кабинета: Артист', [
             {id: 'login', label: 'Логин', placeholder: 'Введите логин', value: fullName},
             {id: 'email', label: 'Почта', type: 'email', placeholder: 'Введите почту', value: email},
-            {id: 'pass', label: 'Пароль', placeholder: 'Введите пароль', value: generateKitePassword()}
+            {id: 'pass', label: 'Пароль', placeholder: 'Введите пароль', value: generateAetherLabPassword()}
         ], async (userData) => {
             const login = String(userData.login || '').trim();
             const userEmail = String(userData.email || '').toLowerCase().trim();
@@ -6490,12 +6490,12 @@ function renderCard(r, isAdmin) {
         }
     }
 
-    document.addEventListener('DOMContentLoaded', restoreKiteSession);
-    window.addEventListener('pageshow', () => { if(!currentUser) restoreKiteSession(); });
+    document.addEventListener('DOMContentLoaded', restoreAetherLabSession);
+    window.addEventListener('pageshow', () => { if(!currentUser) restoreAetherLabSession(); });
 
 
 
-/* ===== Kite Support / FAQ / Tickets engine ===== */
+/* ===== AetherLab Support / FAQ / Tickets engine ===== */
 (function(){
     const SUPPORT_CLOSE_MS = 3 * 24 * 60 * 60 * 1000;
     let supportActiveTab = 'qa';
@@ -6576,7 +6576,7 @@ function renderCard(r, isAdmin) {
         if(src) return `<div class="support-avatar"><img src="${escapeAttr(src)}" alt=""></div>`;
         return `<div class="support-avatar">${escapeHTML(supportInitials(name))}</div>`;
     }
-    function supportKiteAvatar(){ return `<div class="support-avatar support-kite">KT</div>`; }
+    function supportAetherLabAvatar(){ return `<div class="support-avatar support-kite">KT</div>`; }
     function ensureSupportArrays(){
         if(!Array.isArray(appState.supportQas)) appState.supportQas = [];
         if(!Array.isArray(appState.supportTickets)) appState.supportTickets = [];
@@ -6750,7 +6750,7 @@ function renderCard(r, isAdmin) {
             <div class="support-shell">
                 <div class="support-topbar">
                     <div>
-                        <div class="section-kicker">Kite • Support Center</div>
+                        <div class="section-kicker">AetherLab • Support Center</div>
                         <h2>${supportActiveTab === 'tickets' ? (isAdmin ? 'Тикеты артистов' : 'Индивидуальная поддержка') : 'Вопрос/ответ'}</h2>
                     </div>
                     <div class="support-actions">${actionHtml}</div>
@@ -6859,9 +6859,9 @@ function renderCard(r, isAdmin) {
     function renderTicketMessage(m, ticket){
         const isAdminMsg = m.from === 'admin';
         const user = isAdminMsg ? null : (supportUserByEmail(m.userEmail || ticket.userEmail) || {login:m.userLogin || ticket.userLogin, email:m.userEmail || ticket.userEmail, avatar:m.avatar || ticket.userAvatar});
-        const name = isAdminMsg ? 'Kite | Поддержка' : (m.userLogin || (user && user.login) || ticket.userLogin || 'Артист');
+        const name = isAdminMsg ? 'AetherLab | Поддержка' : (m.userLogin || (user && user.login) || ticket.userLogin || 'Артист');
         return `<div class="support-message ${isAdminMsg ? 'admin' : 'artist'}">
-            ${isAdminMsg ? supportKiteAvatar() : supportAvatarHTML(user)}
+            ${isAdminMsg ? supportAetherLabAvatar() : supportAvatarHTML(user)}
             <div class="support-bubble">
                 <div class="support-msg-name">${escapeHTML(name)}</div>
                 <div class="support-msg-text">${escapeHTML(m.text || '')}</div>
@@ -7067,7 +7067,7 @@ function renderCard(r, isAdmin) {
                 id:supportId('msg'),
                 from:isAdminReply ? 'admin' : 'artist',
                 userEmail:isAdminReply ? currentUser.email : currentUser.email,
-                userLogin:isAdminReply ? 'Kite | Поддержка' : (currentUser.login || currentUser.email),
+                userLogin:isAdminReply ? 'AetherLab | Поддержка' : (currentUser.login || currentUser.email),
                 avatar:isAdminReply ? '' : (currentUser.avatar || ''),
                 text:msg,
                 createdAt,
@@ -7080,7 +7080,7 @@ function renderCard(r, isAdmin) {
                 ticket.lastAdminReplyAt = createdAt;
                 ticket.unreadForArtist = true;
                 ticket.unreadForAdmin = false;
-                addSupportNotification(ticket.userEmail, 'Kite | Поддержка ответила на ваш тикет.', ticket.id);
+                addSupportNotification(ticket.userEmail, 'AetherLab | Поддержка ответила на ваш тикет.', ticket.id);
             } else {
                 ticket.lastArtistReplyAt = createdAt;
                 ticket.unreadForAdmin = true;
@@ -7204,8 +7204,8 @@ function renderCard(r, isAdmin) {
 
 </script>
 
-    <div class="seo-keywords-footer" aria-label="Kite Label">
-        Kite Label — музыкальный лейбл и личный кабинет для артистов. Kite, kite label, Кайт, кайт лейбл, Кайт лейбл, кабинет артиста Kite, дистрибуция музыки, релизы артистов.
+    <div class="seo-keywords-footer" aria-label="AetherLab Label">
+        AetherLab Label — музыкальный лейбл и личный кабинет для артистов. AetherLab, kite label, Кайт, кайт лейбл, Кайт лейбл, кабинет артиста AetherLab, дистрибуция музыки, релизы артистов.
     </div>
 
 <script>
@@ -7249,7 +7249,7 @@ function renderCard(r, isAdmin) {
         'adminContent'
     ]);
 
-    function normalizeKitePath(path) {
+    function normalizeAetherLabPath(path) {
         path = String(path || '/').split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
         return path;
     }
@@ -7262,7 +7262,7 @@ function renderCard(r, isAdmin) {
         return !!(currentUser && currentUser.role === 'Administrator');
     }
 
-    function ensureKiteAccess404Styles() {
+    function ensureAetherLabAccess404Styles() {
         if (document.getElementById('kiteAccess404Styles')) return;
 
         const style = document.createElement('style');
@@ -7333,8 +7333,8 @@ function renderCard(r, isAdmin) {
         document.head.appendChild(style);
     }
 
-    function showKiteAccess404() {
-        ensureKiteAccess404Styles();
+    function showAetherLabAccess404() {
+        ensureAetherLabAccess404Styles();
         document.body.classList.add('kite-access-404-lock');
 
         let screen = document.getElementById('kiteAccess404Screen');
@@ -7357,17 +7357,17 @@ function renderCard(r, isAdmin) {
         const homeBtn = document.getElementById('kiteAccess404HomeBtn');
         if (homeBtn) {
             homeBtn.onclick = function () {
-                hideKiteAccess404();
-                setKitePath('/dashboard', true);
+                hideAetherLabAccess404();
+                setAetherLabPath('/dashboard', true);
 
                 window.__kiteRouteOpening = true;
-                try { nav('overview', true); } catch (e) { console.warn('Kite dashboard open error:', e); }
+                try { nav('overview', true); } catch (e) { console.warn('AetherLab dashboard open error:', e); }
                 window.__kiteRouteOpening = false;
             };
         }
     }
 
-    function hideKiteAccess404() {
+    function hideAetherLabAccess404() {
         document.body.classList.remove('kite-access-404-lock');
         const screen = document.getElementById('kiteAccess404Screen');
         if (screen) screen.remove();
@@ -7394,11 +7394,11 @@ function renderCard(r, isAdmin) {
         '/questionnaires': () => nav('questionnaires')
     };
 
-    function setKitePath(path, replace = false) {
-        path = normalizeKitePath(path);
+    function setAetherLabPath(path, replace = false) {
+        path = normalizeAetherLabPath(path);
 
         if (kiteIsArtist() && adminOnlyPaths.has(path)) {
-            showKiteAccess404();
+            showAetherLabAccess404();
             return;
         }
 
@@ -7410,14 +7410,14 @@ function renderCard(r, isAdmin) {
     }
 
     function openCurrentPath() {
-        const path = normalizeKitePath(location.pathname);
+        const path = normalizeAetherLabPath(location.pathname);
 
         if (kiteIsArtist() && adminOnlyPaths.has(path)) {
-            showKiteAccess404();
+            showAetherLabAccess404();
             return;
         }
 
-        hideKiteAccess404();
+        hideAetherLabAccess404();
 
         const action = pathToAction[path] || pathToAction['/dashboard'];
 
@@ -7425,7 +7425,7 @@ function renderCard(r, isAdmin) {
         try {
             action();
         } catch (e) {
-            console.warn('Kite route open error:', e);
+            console.warn('AetherLab route open error:', e);
         }
         window.__kiteRouteOpening = false;
     }
@@ -7435,15 +7435,15 @@ function renderCard(r, isAdmin) {
             const oldNav = window.nav;
             window.nav = function (section) {
                 if (kiteIsArtist() && adminOnlySections.has(section)) {
-                    showKiteAccess404();
+                    showAetherLabAccess404();
                     return;
                 }
 
-                hideKiteAccess404();
+                hideAetherLabAccess404();
 
                 const result = oldNav.apply(this, arguments);
                 if (!window.__kiteRouteOpening && sectionRoutes[section]) {
-                    setKitePath(sectionRoutes[section]);
+                    setAetherLabPath(sectionRoutes[section]);
                 }
                 return result;
             };
@@ -7453,11 +7453,11 @@ function renderCard(r, isAdmin) {
         if (typeof window.navCatalog === 'function' && !window.navCatalog.__kitePatched) {
             const oldNavCatalog = window.navCatalog;
             window.navCatalog = function (type) {
-                hideKiteAccess404();
+                hideAetherLabAccess404();
 
                 const result = oldNavCatalog.apply(this, arguments);
                 if (!window.__kiteRouteOpening && catalogRoutes[type]) {
-                    setKitePath(catalogRoutes[type]);
+                    setAetherLabPath(catalogRoutes[type]);
                 }
                 return result;
             };
@@ -7467,11 +7467,11 @@ function renderCard(r, isAdmin) {
         if (typeof window.startNewRelease === 'function' && !window.startNewRelease.__kitePatched) {
             const oldStartNewRelease = window.startNewRelease;
             window.startNewRelease = function () {
-                hideKiteAccess404();
+                hideAetherLabAccess404();
 
                 const result = oldStartNewRelease.apply(this, arguments);
                 if (!window.__kiteRouteOpening) {
-                    setKitePath('/new-release');
+                    setAetherLabPath('/new-release');
                 }
                 return result;
             };
@@ -7479,7 +7479,7 @@ function renderCard(r, isAdmin) {
         }
     }
 
-    window.openKiteCurrentPath = openCurrentPath;
+    window.openAetherLabCurrentPath = openCurrentPath;
     window.addEventListener('popstate', openCurrentPath);
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -7954,7 +7954,7 @@ function renderCard(r, isAdmin) {
 
     const oldLogout = window.logout;
     window.logout = function(){
-        if(typeof window.clearKiteSession === 'function') window.clearKiteSession();
+        if(typeof window.clearAetherLabSession === 'function') window.clearAetherLabSession();
         else if(typeof oldLogout === 'function') { try { oldLogout(); } catch(e) {} }
         try { history.replaceState(null, '', '/'); } catch(e) {}
         location.replace('/');
