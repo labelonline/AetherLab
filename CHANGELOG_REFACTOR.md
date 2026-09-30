@@ -35,3 +35,11 @@
 - Added mobile drawer controller with backdrop, Escape, tap-to-close and edge swipe (`js/mobile.js`).
 - Added mobile dynamic page title and safe-area support for iPhone-style displays.
 - Added mobile overrides for Overview, releases, track editor, catalog cards, dialogs, finance tables, support/chat, karaoke, media and admin views.
+
+## Smart Links Beta — 2026-09-30
+- Replaced manual external promo-link entry with native AetherLab Smart Links for the Main Administrator.
+- Added a Feature.fm-inspired split editor with live desktop/mobile preview, service ordering, custom slug, cover upload, design controls and optional social links.
+- Added public `/smart/?id=...` release pages hosted directly on GitHub Pages and backed by Firebase data.
+- Added AetherLab-powered footer with rounded site logo; privacy/terms/report-problem blocks are intentionally omitted.
+- Added BETA badges to Promo Links and Financial Reports.
+- Preserved the site-wide mobile layer and added full mobile layouts for the Smart Link editor and public Smart Link page.

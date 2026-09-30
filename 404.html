@@ -8,15 +8,25 @@
 <script>
 (function(){
     var base = 'https://labelonline.github.io/AetherLab/';
+    var path = location.pathname || '';
+    var rel = path.indexOf('/AetherLab/') === 0 ? path.slice('/AetherLab/'.length) : path.replace(/^\/+/, '');
+
+    // Friendly Smart Link aliases. GitHub Pages cannot create dynamic subdomains,
+    // so these aliases are converted to the real 200-page smartlink.html.
+    var smartMatch = rel.match(/^(?:s|smart)\/([^/]+)\/?$/i);
+    if (smartMatch && smartMatch[1]) {
+        location.replace(base + 'smartlink.html?id=' + encodeURIComponent(decodeURIComponent(smartMatch[1])));
+        return;
+    }
+
     var known = new Set([
         '/dashboard','/new-release','/releases','/drafts','/moderation','/fixes',
         '/news','/instruction','/support','/support-ticket','/cabinets',
         '/admin-releases','/deleted','/content-manager','/lyrics-karaoke',
-        '/promo-links','/questionnaires'
+        '/promo-links','/questionnaires','/financial-reports'
     ]);
     try {
-        var p = location.pathname || '';
-        if(p.indexOf('/AetherLab/') === 0) p = '/' + p.slice('/AetherLab/'.length);
+        var p = '/' + rel;
         p = p.replace(/\/$/, '') || '/dashboard';
         if(known.has(p)) sessionStorage.setItem('aetherlab_last_route_v1', p);
     } catch(e) {}
