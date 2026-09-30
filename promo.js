@@ -2,7 +2,7 @@
 (function(){
     'use strict';
 
-    const SMART_LINK_BASE = 'https://labelonline.github.io/AetherLab/smartlink.html?id=';
+    const SMART_LINK_BASE = 'https://labelonline.github.io/AetherLab-SmartLinks/#';
     const SERVICE_CATALOG = [
         {id:'spotify', name:'Spotify', mark:'SP'},
         {id:'apple', name:'Apple Music', mark:'AM'},
@@ -120,13 +120,43 @@
         return out;
     }
 
+    function publicSmartLinkPayload(record){
+        const safe = normalizeSmartState(record || {});
+        return {
+            sourceId: String(safe.id || ''),
+            kind: 'aether-smart-link',
+            slug: String(safe.slug || ''),
+            title: String(safe.title || ''),
+            artist: String(safe.artist || ''),
+            subtitle: String(safe.subtitle || ''),
+            coverUrl: String(safe.coverUrl || ''),
+            releaseDate: String(safe.releaseDate || ''),
+            services: (safe.services || []).map(s => ({
+                id: String(s.id || ''), name: String(s.name || ''), mark: String(s.mark || ''),
+                url: String(s.url || ''), cta: String(s.cta || 'Play')
+            })),
+            socials: Object.assign({}, safe.socials || {}),
+            theme: Object.assign({}, safe.theme || {}),
+            updatedAt: Number(safe.updatedAt || Date.now()),
+            createdAt: Number(safe.createdAt || Date.now()),
+            deleted: false
+        };
+    }
+
     async function savePromoLinkRecord(record){
         if(!record.id) record.id = 'smart_' + Date.now().toString(36);
         record.updatedAt = Date.now();
         if(!record.createdAt) record.createdAt = record.updatedAt;
-        const idx = appState.promoLinks.findIndex(x => String(x.id) === String(record.id));
-        if(idx >= 0) appState.promoLinks[idx] = smartClone(record); else appState.promoLinks.push(smartClone(record));
-        await db.ref('promoLinks/' + record.id).set(record);
+        const existingIndex = appState.promoLinks.findIndex(x => String(x.id) === String(record.id));
+        const previous = existingIndex >= 0 ? appState.promoLinks[existingIndex] : null;
+        const previousSlug = String(previous && previous.slug || '').trim();
+        const nextSlug = String(record.slug || '').trim();
+        const updates = {};
+        updates['promoLinks/' + record.id] = record;
+        if(nextSlug) updates['publicSmartLinks/' + nextSlug] = publicSmartLinkPayload(record);
+        if(previousSlug && previousSlug !== nextSlug) updates['publicSmartLinks/' + previousSlug] = null;
+        await db.ref().update(updates);
+        if(existingIndex >= 0) appState.promoLinks[existingIndex] = smartClone(record); else appState.promoLinks.push(smartClone(record));
         renderPromoLinks();
         return record;
     }
@@ -161,7 +191,8 @@
         const cover = item.coverUrl || rel.coverFile || '';
         const title = item.title || rel.title || 'Без названия';
         const artist = item.artist || rel.artist || '—';
-        const stats = item.stats || {};
+        const publicCopy = (appState.publicSmartLinks || {})[String(item.slug || '')] || {};
+        const stats = publicCopy.stats || item.stats || {};
         const visits = Number(stats.views || 0);
         const actions = [];
         if(url){
@@ -374,7 +405,16 @@
     function deletePromoLink(id){
         if(!isMainSmartLinkAdmin()) return;
         const item=findSmartLinkById(id); if(!item)return;
-        UI.confirm('Удалить этот смарт-линк?', async()=>{ item.deleted=true; item.updatedAt=Date.now(); try{await db.ref('promoLinks/'+item.id).set(item);renderPromoLinks();}catch(e){UI.alert('Ошибка','Не удалось удалить ссылку.');} });
+        UI.confirm('Удалить этот смарт-линк?', async()=>{
+            item.deleted=true; item.updatedAt=Date.now();
+            try{
+                const updates={};
+                updates['promoLinks/'+item.id]=item;
+                if(item.slug) updates['publicSmartLinks/'+String(item.slug)]=null;
+                await db.ref().update(updates);
+                renderPromoLinks();
+            }catch(e){UI.alert('Ошибка','Не удалось удалить ссылку.');}
+        });
     }
 
     Object.assign(window,{

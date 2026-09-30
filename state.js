@@ -1,5 +1,5 @@
 /* AetherLab module extracted from the former monolithic index.html. */
-    let appState = { users: [], releases: [], chats: {}, content: { news: [], guide: [] }, promoLinks: [], questionnaires: [], supportQas: [], supportTickets: [] }; 
+    let appState = { users: [], releases: [], chats: {}, content: { news: [], guide: [] }, promoLinks: [], publicSmartLinks: {}, questionnaires: [], supportQas: [], supportTickets: [] }; 
     let currentUser = null; 
     let authMode = 'login'; 
     let currentSection = 'overview'; 

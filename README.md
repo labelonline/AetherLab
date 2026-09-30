@@ -22,3 +22,7 @@ The Overview is driven by live `appState` data and uses Firebase Realtime Databa
 ## Deployment
 
 Upload the complete repository structure to GitHub Pages. Do not upload only `index.html`; `partials`, `views`, `css`, and `js` are runtime dependencies.
+
+## Smart Links repository
+Public Smart Links are now served by the separate GitHub Pages repository `AetherLab-SmartLinks`.
+The dashboard creates URLs in the form `https://labelonline.github.io/AetherLab-SmartLinks/#artist-release`.

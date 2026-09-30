@@ -77,6 +77,11 @@
         if(currentUser && currentSection === 'promoLinks') refreshUI();
     }, (err) => console.error(err));
 
+    db.ref('publicSmartLinks').on('value', (snapshot) => {
+        appState.publicSmartLinks = snapshot.val() || {};
+        if(currentUser && currentSection === 'promoLinks') refreshUI();
+    }, (err) => console.error(err));
+
     db.ref('questionnaires').on('value', (snapshot) => {
         const data = snapshot.val() || {};
         appState.questionnaires = Object.values(data).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));

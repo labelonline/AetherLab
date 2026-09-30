@@ -1,16 +1,10 @@
-# AetherLab routing
+# AetherLab Smart Links routing
 
-Main cabinet:
-https://labelonline.github.io/AetherLab/
+Public Smart Links are hosted by a separate GitHub Pages project:
 
-Public Smart Links (canonical):
-https://labelonline.github.io/AetherLab/smartlink.html?id=artist-release
+- Dashboard/editor: https://labelonline.github.io/AetherLab/
+- Public Smart Links: https://labelonline.github.io/AetherLab-SmartLinks/#<slug>
 
-Legacy links remain compatible:
-https://labelonline.github.io/AetherLab/smart/?id=artist-release
+The AetherLab dashboard writes the editable record to `promoLinks/<id>` and a public-safe copy to `publicSmartLinks/<slug>` in the same Firebase Realtime Database.
 
-Friendly aliases also redirect correctly:
-https://labelonline.github.io/AetherLab/s/artist-release
-https://labelonline.github.io/AetherLab/smart/artist-release
-
-Important: upload the CONTENTS of AetherLab-main to the repository root. The repository root must contain the main index.html. Do not copy smart/index.html to the repository root.
+The public repository reads only the Smart Link data it needs. The old `smartlink.html` renderer was intentionally removed from the main repository so it cannot replace or interfere with the dashboard entry point.
