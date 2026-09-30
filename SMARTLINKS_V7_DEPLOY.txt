@@ -1,0 +1,11 @@
+AetherLab Smart Links v7
+
+ВАЖНО: загрузите в GitHub ВЕСЬ контент папки AetherLab-main с заменой существующих файлов.
+Проверьте, что появились новые файлы:
+- js/bootstrap-smartlinks-v7.js
+- js/modules/smartlinks-admin-v7.js
+
+Основной сайт: https://labelonline.github.io/AetherLab/
+Публичный Smart Links сайт: https://labelonline.github.io/AetherLab-SmartLinks/
+
+После обновления старой формы «Промо-ссылка / Сохранить ссылку» в интерфейсе быть не должно.

@@ -182,3 +182,11 @@ body.sidebar-collapsed .sidebar-beta{display:none!important}
   .smart-link-admin-hero h3{font-size:15px}
   .smart-link-admin-hero p{font-size:10px}
 }
+
+
+/* ===== Smart Links v7: hard replacement of legacy URL form ===== */
+#sec-promoLinks .smart-link-admin-hero{margin-bottom:16px}
+#sec-promoLinks .smart-create-btn{min-height:48px;padding-inline:22px;font-weight:800;box-shadow:0 14px 34px rgba(68,110,240,.26)}
+.smart-legacy-notice{display:flex;flex-direction:column;gap:5px;margin:0 0 14px;padding:13px 15px;border-radius:16px;border:1px solid rgba(245,158,11,.22);background:rgba(245,158,11,.075);color:#f7d39a}
+.smart-legacy-notice strong{font-size:12px}.smart-legacy-notice span{font-size:10px;line-height:1.55;color:#b8a98d}
+@media(max-width:768px){#sec-promoLinks .smart-link-admin-hero-actions{width:100%}#sec-promoLinks .smart-link-admin-hero-actions .btn-primary,#sec-promoLinks .smart-link-admin-hero-actions .btn-outline{width:100%}}
