@@ -11,6 +11,10 @@
 body.sidebar-collapsed .sidebar-beta{display:none!important}
 
 .smart-admin-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+
+.smart-link-admin-hero{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:16px;align-items:center;padding:18px;margin-bottom:16px;border:1px solid rgba(91,142,255,.18);border-radius:24px;background:radial-gradient(circle at 0 0,rgba(91,142,255,.15),transparent 38%),rgba(255,255,255,.035);box-shadow:0 18px 46px rgba(0,0,0,.18)}
+.smart-link-admin-hero-icon{width:52px;height:52px;border-radius:17px;display:grid;place-items:center;font-size:23px;font-weight:800;color:#e9f7ff;background:linear-gradient(135deg,#446ef0,#59c7f8);box-shadow:0 12px 30px rgba(68,110,240,.24)}
+.smart-link-admin-hero-copy{min-width:0}.smart-link-admin-hero-kicker{display:flex;align-items:center;gap:8px;color:#9cb9ff;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px}.smart-link-admin-hero h3{margin:0 0 5px;font-size:17px;line-height:1.2;color:#fff}.smart-link-admin-hero p{margin:0;color:#98a3b8;font-size:11px;line-height:1.55;max-width:720px}.smart-link-admin-hero p strong{color:#d7e6ff}.smart-link-public-host{margin-top:8px;color:#7da4ff;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.smart-link-admin-hero-actions{display:flex;flex-direction:column;gap:8px;min-width:190px}.smart-link-admin-hero-actions button{width:100%;font-size:11px;padding:10px 14px}
 .smart-admin-title{font-size:28px!important;line-height:1.1;margin:0 0 7px!important;font-weight:800!important;letter-spacing:-.03em}
 .smart-admin-subtitle{margin:0;color:var(--text-muted);max-width:700px;line-height:1.55}
 .smart-create-btn{white-space:nowrap;min-height:44px}
@@ -169,3 +173,12 @@ body.sidebar-collapsed .sidebar-beta{display:none!important}
 }
 .sl-service-logo svg{width:21px;height:21px;display:block}
 .sl-social svg{width:18px;height:18px;display:block}
+
+@media(max-width:768px){
+  .smart-link-admin-hero{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:14px;border-radius:20px;align-items:start}
+  .smart-link-admin-hero-icon{width:44px;height:44px;border-radius:14px;font-size:19px}
+  .smart-link-admin-hero-actions{grid-column:1/-1;min-width:0;width:100%;display:grid;grid-template-columns:1fr;gap:8px}
+  .smart-link-admin-hero-actions button{min-height:43px}
+  .smart-link-admin-hero h3{font-size:15px}
+  .smart-link-admin-hero p{font-size:10px}
+}

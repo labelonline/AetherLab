@@ -1,10 +1,8 @@
 # AetherLab Smart Links routing
 
-Public Smart Links are hosted by a separate GitHub Pages project:
-
-- Dashboard/editor: https://labelonline.github.io/AetherLab/
-- Public Smart Links: https://labelonline.github.io/AetherLab-SmartLinks/#<slug>
-
-The AetherLab dashboard writes the editable record to `promoLinks/<id>` and a public-safe copy to `publicSmartLinks/<slug>` in the same Firebase Realtime Database.
-
-The public repository reads only the Smart Link data it needs. The old `smartlink.html` renderer was intentionally removed from the main repository so it cannot replace or interfere with the dashboard entry point.
+- Main cabinet: https://labelonline.github.io/AetherLab/
+- Public Smart Links host: https://labelonline.github.io/AetherLab-SmartLinks/
+- Generated URL format: https://labelonline.github.io/AetherLab-SmartLinks/#artist-release
+- The main cabinet writes public-safe data to Firebase `publicSmartLinks/<slug>`.
+- The public repository only reads the public Smart Link payload and renders it.
+- Build `20260930-smartlinks-5` uses cache-busting for partials and JS so old promo UI does not remain cached.
