@@ -499,7 +499,7 @@
         const main=typeof isMainAdministrator==='function'&&isMainAdministrator(currentUser);
         const vr=visibleReports();
         const toolbar=main?`<button class="btn-primary finance-upload-main" onclick="openFinanceUploadModal()"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>${fesc(ft('uploadReports'))}</button>`:'';
-        let html=`<div class="finance-shell"><div class="finance-topbar"><div><h2>${fesc(ft('title'))}</h2><p>${fesc(ft('intro'))}</p></div>${toolbar}</div>`;
+        let html=`<div class="finance-shell"><div class="finance-topbar"><div><h2>${fesc(ft('title'))} <span class="aether-beta-badge">BETA</span></h2><p>${fesc(ft('intro'))}</p></div>${toolbar}</div>`;
         if(main&&financeState.draft) html+=renderFinanceDraft();
         if(!vr.length){ html+=`<div class="finance-empty">${fesc(ft('noReports'))}</div></div>`; area.innerHTML=html; return; }
         html+=`<div class="finance-table-wrap"><table class="finance-table"><thead><tr><th style="width:34%">${fesc(ft('quarter'))}</th><th style="width:31%">${fesc(ft('amount'))}</th><th style="width:35%;text-align:right">${fesc(ft('actions'))}</th></tr></thead><tbody>`;
@@ -522,7 +522,7 @@
     function syncFinanceNav(){
         const btn=document.getElementById('btn-financialReports'), label=document.getElementById('financialReportsMenuLabel'), lock=document.getElementById('financialReportsNavLock');
         if(!btn||!label) return;
-        label.textContent=ft('title');
+        label.innerHTML=fesc(ft('title'))+' <span class="sidebar-beta">BETA</span>';
         const open=canCurrentUserOpenFinance();
         btn.classList.toggle('aether-finance-locked',!open);
         if(lock) lock.classList.toggle('hidden',open);
