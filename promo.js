@@ -37,12 +37,8 @@
     }
     function isMainSmartLinkAdmin(){
         if(!currentUser || currentUser.role !== 'Administrator') return false;
-        // Prefer the cabinet's canonical main-admin check, but keep admin_root as a safe fallback
-        // for the original root account if its profile data was edited later.
-        if(typeof isMainAdministrator === 'function' && isMainAdministrator(currentUser)) return true;
-        if(String(currentUser.id || '') === 'admin_root') return true;
         const email = String(currentUser.email || '').trim().toLowerCase();
-        return !!ADMIN_EMAIL && email === String(ADMIN_EMAIL).trim().toLowerCase();
+        return !ADMIN_EMAIL || email === String(ADMIN_EMAIL).trim().toLowerCase();
     }
     function smartUrl(slug){ return SMART_LINK_BASE + encodeURIComponent(String(slug || '').trim()); }
     function validHttpUrl(value){ return !value || /^https?:\/\//i.test(String(value).trim()); }
@@ -155,30 +151,12 @@
         const previous = existingIndex >= 0 ? appState.promoLinks[existingIndex] : null;
         const previousSlug = String(previous && previous.slug || '').trim();
         const nextSlug = String(record.slug || '').trim();
-
-        // Save the authoritative editor record first. Public publishing is deliberately
-        // separate so a stricter rule on publicSmartLinks cannot destroy the editor flow.
-        await db.ref('promoLinks/' + record.id).set(record);
+        const updates = {};
+        updates['promoLinks/' + record.id] = record;
+        if(nextSlug) updates['publicSmartLinks/' + nextSlug] = publicSmartLinkPayload(record);
+        if(previousSlug && previousSlug !== nextSlug) updates['publicSmartLinks/' + previousSlug] = null;
+        await db.ref().update(updates);
         if(existingIndex >= 0) appState.promoLinks[existingIndex] = smartClone(record); else appState.promoLinks.push(smartClone(record));
-
-        if(nextSlug){
-            try{
-                const existingPublic = (appState.publicSmartLinks || {})[nextSlug] || {};
-                const payload = publicSmartLinkPayload(record);
-                if(existingPublic.stats) payload.stats = smartClone(existingPublic.stats);
-                await db.ref('publicSmartLinks/' + nextSlug).set(payload);
-                appState.publicSmartLinks = appState.publicSmartLinks || {};
-                appState.publicSmartLinks[nextSlug] = payload;
-            }catch(publicErr){
-                console.warn('AetherLab Smart Links: publicSmartLinks publish failed, legacy fallback remains available.', publicErr);
-            }
-        }
-        if(previousSlug && previousSlug !== nextSlug){
-            try{
-                await db.ref('publicSmartLinks/' + previousSlug).remove();
-                if(appState.publicSmartLinks) delete appState.publicSmartLinks[previousSlug];
-            }catch(publicErr){ console.warn('AetherLab Smart Links: old public slug cleanup failed.', publicErr); }
-        }
         renderPromoLinks();
         return record;
     }
@@ -186,44 +164,24 @@
     function renderPromoLinks(){
         const area = document.getElementById('promoLinksArea');
         if(!area || !currentUser) return;
-        const mainAdmin = isMainSmartLinkAdmin();
         const createBtn = document.getElementById('smartCreateButton');
-        if(createBtn){
-            createBtn.classList.toggle('hidden', !mainAdmin);
-            createBtn.disabled = !mainAdmin;
-        }
+        if(createBtn) createBtn.classList.toggle('hidden', !isMainSmartLinkAdmin());
 
         const rels = approvedReleases();
         const releaseIds = new Set(rels.map(r=>String(r.id)));
-        let items = (appState.promoLinks || []).filter(x => !x.deleted && (mainAdmin || releaseIds.has(String(x.releaseId))));
+        let items = (appState.promoLinks || []).filter(x => !x.deleted && (isMainSmartLinkAdmin() || releaseIds.has(String(x.releaseId))));
         items = items.sort((a,b)=>Number(b.updatedAt||b.createdAt||0)-Number(a.updatedAt||a.createdAt||0));
 
-        const nativeCount = items.filter(smartLinkIsNative).length;
-        const legacyCount = items.length - nativeCount;
-        const adminIntro = mainAdmin ? `<section class="smart-link-admin-hero">
-            <div class="smart-link-admin-hero-icon" aria-hidden="true">↗</div>
-            <div class="smart-link-admin-hero-copy">
-                <div class="smart-link-admin-hero-kicker">AetherLab Smart Links <span class="aether-beta-badge">BETA</span></div>
-                <h3>Создавайте смарт-линки прямо в кабинете</h3>
-                <p>Редактор, площадки, соцсети и дизайн находятся здесь. После публикации слушатель открывает отдельную страницу на <strong>AetherLab-SmartLinks</strong>.</p>
-                <div class="smart-link-public-host">https://labelonline.github.io/AetherLab-SmartLinks/#ваш-slug</div>
-            </div>
-            <div class="smart-link-admin-hero-actions">
-                <button class="btn-primary" type="button" onclick="openSmartLinkEditor()">+ Создать смарт-линк</button>
-                <button class="btn-outline" type="button" onclick="window.open('https://labelonline.github.io/AetherLab-SmartLinks/','_blank','noopener')">Открыть сайт Smart Links</button>
-            </div>
-        </section>` : '';
-
-        if(!mainAdmin && !items.length){
+        if(!isMainSmartLinkAdmin() && !items.length){
             area.innerHTML = `<div class="smart-link-empty"><strong>Смарт-линков пока нет</strong>Когда команда AetherLab создаст ссылку для вашего релиза, она появится здесь.</div>`;
             return;
         }
-        if(mainAdmin && !items.length){
-            area.innerHTML = adminIntro + `<div class="smart-link-empty"><strong>Создайте первый смарт-линк</strong>Выберите принятый релиз, добавьте площадки, соцсети и настройте внешний вид страницы.</div>`;
+        if(isMainSmartLinkAdmin() && !items.length){
+            area.innerHTML = `<div class="smart-link-empty"><strong>Создайте первый смарт-линк</strong>Выберите принятый релиз, добавьте площадки и настройте внешний вид страницы.</div>`;
             return;
         }
 
-        area.innerHTML = `${adminIntro}<div class="smart-admin-toolbar"><div class="smart-admin-count">Смарт-линков AetherLab: ${nativeCount}${legacyCount ? ` • старых внешних: ${legacyCount}` : ''}</div></div><div class="smart-link-list">${items.map(renderSmartCard).join('')}</div>`;
+        area.innerHTML = `<div class="smart-admin-toolbar"><div class="smart-admin-count">Смарт-линков: ${items.length}</div></div><div class="smart-link-list">${items.map(renderSmartCard).join('')}</div>`;
     }
 
     function renderSmartCard(item){
@@ -318,7 +276,7 @@
             <div class="smart-editor-grid"><div class="form-group"><label>Название</label><input value="${smartAttr(smartEditorState.title)}" oninput="smartEditorSet('title',this.value)"></div><div class="form-group"><label>Артист</label><input value="${smartAttr(smartEditorState.artist)}" oninput="smartEditorSet('artist',this.value)"></div></div>
             <div class="form-group"><label>Текст над площадками</label><input value="${smartAttr(smartEditorState.subtitle)}" oninput="smartEditorSet('subtitle',this.value)" placeholder="Choose your preferred music service"></div>
           </div>
-          <div class="smart-editor-block"><div class="smart-editor-block-title">Публичная ссылка <span class="smart-editor-block-note">открывается на отдельном сайте AetherLab-SmartLinks</span></div>
+          <div class="smart-editor-block"><div class="smart-editor-block-title">Адрес страницы <span class="smart-editor-block-note">все возможности доступны бесплатно</span></div>
             <div class="form-group"><label>Slug</label><div class="smart-editor-url-row"><input value="${smartAttr(smartEditorState.slug)}" oninput="this.value=smartEditorSlugInput(this.value)" placeholder="artist-release"><button class="btn-outline" type="button" onclick="copyCurrentSmartUrl()">Копировать</button></div></div>
             <div class="smart-link-card-url" id="smartPublicUrlText">${smartText(smartUrl(smartEditorState.slug))}</div>
           </div>
@@ -434,7 +392,7 @@
         if(badSocial) return UI.alert('Ошибка ссылки','Ссылки на соцсети должны начинаться с https://');
         state.url=smartUrl(state.slug); state.kind='aether-smart-link'; state.deleted=false;
         const btn=document.getElementById('smartSaveBtn'); if(btn){btn.disabled=true;btn.textContent='Сохранение…';}
-        try{await savePromoLinkRecord(state);const publishedUrl=smartUrl(state.slug);closeSmartLinkEditor();UI.alert('Смарт-линк опубликован',`Ссылка готова и открывается на отдельном сайте AetherLab Smart Links.\n\n${publishedUrl}`);}
+        try{await savePromoLinkRecord(state);closeSmartLinkEditor();UI.alert('Готово','Смарт-линк сохранён и уже доступен по публичной ссылке.');}
         catch(err){console.error(err);UI.alert('Ошибка','Не удалось сохранить смарт-линк в Firebase.');}
         finally{if(btn){btn.disabled=false;btn.textContent='Сохранить смарт-линк';}}
     }
@@ -450,11 +408,10 @@
         UI.confirm('Удалить этот смарт-линк?', async()=>{
             item.deleted=true; item.updatedAt=Date.now();
             try{
-                await db.ref('promoLinks/'+item.id).set(item);
-                if(item.slug){
-                    try{await db.ref('publicSmartLinks/'+String(item.slug)).remove();}catch(publicErr){console.warn('AetherLab Smart Links: public cleanup failed.', publicErr);}
-                    if(appState.publicSmartLinks) delete appState.publicSmartLinks[String(item.slug)];
-                }
+                const updates={};
+                updates['promoLinks/'+item.id]=item;
+                if(item.slug) updates['publicSmartLinks/'+String(item.slug)]=null;
+                await db.ref().update(updates);
                 renderPromoLinks();
             }catch(e){UI.alert('Ошибка','Не удалось удалить ссылку.');}
         });

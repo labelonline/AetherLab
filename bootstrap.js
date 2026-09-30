@@ -1,11 +1,9 @@
 (async function(){
     'use strict';
     const root=document.getElementById('aether-root');
-    const BUILD_VERSION='20260930-smartlinks-5';
-    function versioned(path){ const join=String(path).includes('?')?'&':'?'; return `${path}${join}v=${encodeURIComponent(BUILD_VERSION)}`; }
     const viewNames=['overview','catalog','userChat','news','guide','karaoke','promoLinks','financialReports','adminChats','newRelease','trackEdit','adminContent','questionnaires','adminUsers','adminReleases','adminDeleted'];
-    async function get(path){ const r=await fetch(versioned(path),{cache:'no-store'}); if(!r.ok)throw new Error(`${path}: HTTP ${r.status}`); return r.text(); }
-    function loadScript(src){ return new Promise((resolve,reject)=>{ const s=document.createElement('script');s.src=versioned(src);s.onload=resolve;s.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));document.body.appendChild(s); }); }
+    async function get(path){ const r=await fetch(path,{cache:'no-cache'}); if(!r.ok)throw new Error(`${path}: HTTP ${r.status}`); return r.text(); }
+    function loadScript(src){ return new Promise((resolve,reject)=>{ const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));document.body.appendChild(s); }); }
     try{
         const [globalHtml,sidebarHtml,footerHtml,...views]=await Promise.all([get('partials/global.html'),get('partials/sidebar.html'),get('partials/seo-footer.html'),...viewNames.map(v=>get(`views/${v}.html`))]);
         root.innerHTML=globalHtml;
