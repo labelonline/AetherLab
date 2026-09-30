@@ -1,23 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#090c12">
-  <meta name="robots" content="index,follow">
-  <title>AetherLab Smart Link</title>
-  <link rel="icon" type="image/png" href="../favicon.png">
-  <meta property="og:title" content="AetherLab Smart Link">
-  <meta property="og:description" content="Listen to this release on your preferred music service.">
-  <meta property="og:image" content="https://labelonline.github.io/AetherLab/favicon.png">
-  <link rel="stylesheet" href="smart.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script src="js/language-preload.js"></script>
+    <title>AetherLab</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="description" content="AetherLab Label — личный кабинет для артистов, загрузки релизов, модерации музыки, новостей и инструкций.">
+    <meta name="keywords" content="AetherLab, AetherLab Label, музыкальный лейбл, музыкальный дистрибьютор, дистрибуция музыки, кабинет артиста">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://labelonline.github.io/AetherLab/">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/date-picker.css">
+    <link rel="stylesheet" href="css/karaoke.css">
+    <link rel="stylesheet" href="css/audio.css">
+    <link rel="stylesheet" href="css/releases.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/questionnaires.css">
+    <link rel="stylesheet" href="css/support.css">
+    <link rel="stylesheet" href="css/finance.css">
+    <link rel="stylesheet" href="css/i18n.css">
+    <link rel="stylesheet" href="css/ai.css">
+    <link rel="stylesheet" href="css/sidebar-v3.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <div id="smartRoot" class="smart-loading-shell">
-    <div class="smart-loader" aria-label="Loading"></div>
-  </div>
-  <script src="smart.js"></script>
+    <div id="aether-root"></div>
+    <noscript>AetherLab requires JavaScript.</noscript>
+    <script src="js/bootstrap.js"></script>
 </body>
 </html>
