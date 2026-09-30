@@ -2,6 +2,9 @@
 (function () {
     const sectionRoutes = {
         overview: '/dashboard',
+        releaseCalendar: '/calendar',
+        releaseHub: '/release',
+        activityLog: '/activity-log',
         newRelease: '/new-release',
         news: '/news',
         guide: '/instruction',
@@ -9,7 +12,6 @@
         adminChats: '/support',
         adminUsers: '/cabinets',
         adminReleases: '/admin-releases',
-        adminDeleted: '/deleted',
         adminContent: '/content-manager',
         karaoke: '/lyrics-karaoke',
         promoLinks: '/promo-links',
@@ -27,16 +29,16 @@
         '/cabinets',
         '/questionnaires',
         '/admin-releases',
-        '/deleted',
-        '/content-manager'
+        '/content-manager',
+        '/activity-log'
     ]);
 
     const adminOnlySections = new Set([
         'adminUsers',
         'questionnaires',
         'adminReleases',
-        'adminDeleted',
-        'adminContent'
+        'adminContent',
+        'activityLog'
     ]);
 
     const AETHERLAB_BASE_PATH = '/AetherLab/';
@@ -172,6 +174,9 @@
     const pathToAction = {
         '/': () => nav('overview'),
         '/dashboard': () => nav('overview'),
+        '/calendar': () => nav('releaseCalendar'),
+        '/release': () => nav('releaseHub'),
+        '/activity-log': () => nav('activityLog'),
         '/new-release': () => startNewRelease(),
         '/releases': () => navCatalog('all'),
         '/drafts': () => navCatalog('drafts'),
@@ -183,7 +188,6 @@
         '/support-ticket': () => { if (typeof supportSetTab === 'function') supportSetTab('tickets'); nav(kiteIsAdmin() ? 'adminChats' : 'userChat'); },
         '/cabinets': () => nav('adminUsers'),
         '/admin-releases': () => nav('adminReleases'),
-        '/deleted': () => nav('adminDeleted'),
         '/content-manager': () => nav('adminContent'),
         '/lyrics-karaoke': () => nav('karaoke'),
         '/promo-links': () => nav('promoLinks'),

@@ -66,7 +66,7 @@
                 if(appState.users.find(x => x.email === checkEmail)) return UI.alert("Ошибка", "Почта уже занята");
                 if(appState.users.find(x => String(x.login || '').trim().toLowerCase() === String(userData.login || '').trim().toLowerCase() && !x.isDeletedCabinet)) return UI.alert("Ошибка", "Логин уже занят");
                 const newUser = { id: 'u' + Date.now(), login: userData.login, email: checkEmail, pass: userData.pass, role: res.role, createdByAdminId: currentUser && currentUser.id ? String(currentUser.id) : '', createdByAdminEmail: currentUser && currentUser.email ? String(currentUser.email).toLowerCase().trim() : '', createdByAdminLogin: currentUser && currentUser.login ? String(currentUser.login) : '', passwordHistory: [{pass: userData.pass, date: new Date().toLocaleString()}], isBanned: false, banReason: '', notifications: [], unreadAdminMsg: false, unreadArtistChats: {}, readContent: {}, avatar: '', isDeletedCabinet: false };
-                saveUserDB(newUser); UI.alert("Успешно", "Новый кабинет успешно открыт."); if(currentSection === 'adminUsers') renderAdminUsers();
+                saveUserDB(newUser); if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Создан кабинет',`${newUser.login} (${newUser.email})`,null,{userEmail:newUser.email}); UI.alert("Успешно", "Новый кабинет успешно открыт."); if(currentSection === 'adminUsers') renderAdminUsers();
         if(currentSection === 'questionnaires') renderQuestionnaires();
             });
         });
@@ -79,7 +79,7 @@
     }
     function changeUserRole(id) {
         const u = appState.users.find(x => x.id === id); if(u.email === ADMIN_EMAIL) return UI.alert("Ошибка", "Нельзя изменить роль главного администратора.");
-        UI.prompt("Изменение роли", [{ id: 'role', label: `Текущая роль: ${getRoleName(u.role)}`, type: 'select', value: u.role, options: [{v: 'Artist', t: 'Артист'}, {v: 'Administrator', t: 'Администратор'}] }], (res) => { u.role = res.role; saveUserDB(u); UI.alert("Успешно", `Роль кабинета изменена на: ${getRoleName(res.role)}`); renderAdminUsers(); });
+        UI.prompt("Изменение роли", [{ id: 'role', label: `Текущая роль: ${getRoleName(u.role)}`, type: 'select', value: u.role, options: [{v: 'Artist', t: 'Артист'}, {v: 'Administrator', t: 'Администратор'}] }], (res) => { const oldRole=u.role; u.role = res.role; saveUserDB(u); if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Изменена роль кабинета',`${u.login}: ${getRoleName(oldRole)} → ${getRoleName(res.role)}`,null,{userEmail:u.email}); UI.alert("Успешно", `Роль кабинета изменена на: ${getRoleName(res.role)}`); renderAdminUsers(); });
     }
     function renderAdminUsers() {
         document.getElementById('adminUsersList').innerHTML = appState.users.filter(u => !u.isDeletedCabinet).map(u => {
@@ -91,8 +91,8 @@
     function toggleBan(id) {
         const u = appState.users.find(x => x.id === id); if(u.email === ADMIN_EMAIL) return UI.alert("Ошибка", "Нельзя заблокировать главного администратора.");
         if (u.role === 'Administrator' && currentUser.email !== ADMIN_EMAIL) return UI.alert("Ошибка", "Только главный администратор может блокировать других администраторов.");
-        if(u.isBanned) { u.isBanned = false; u.banReason = ''; saveUserDB(u); renderAdminUsers(); } 
-        else { UI.prompt("Блокировка", [{id: 'r', placeholder: 'Причина закрытия'}], (res) => { u.isBanned = true; u.banReason = res.r || 'Нарушение правил'; saveUserDB(u); renderAdminUsers(); }); }
+        if(u.isBanned) { u.isBanned = false; u.banReason = ''; saveUserDB(u); if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Кабинет разблокирован',`${u.login} (${u.email})`,null,{userEmail:u.email}); renderAdminUsers(); } 
+        else { UI.prompt("Блокировка", [{id: 'r', placeholder: 'Причина закрытия'}], (res) => { u.isBanned = true; u.banReason = res.r || 'Нарушение правил'; saveUserDB(u); if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Кабинет заблокирован',`${u.login}: ${u.banReason}`,null,{userEmail:u.email}); renderAdminUsers(); }); }
     }
     function deleteCabinet(id) {
         UI.confirm("Полностью удалить этот кабинет? Он исчезнет из списка навсегда.", () => {

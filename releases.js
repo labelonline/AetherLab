@@ -33,8 +33,12 @@
                 tracks: draftRelease.tracks, 
                 isDeleted: preserveExisting ? !!existingRelease.isDeleted : false,
                 adminIsrc: preserveExisting ? (existingRelease.adminIsrc || '') : '',
-                rejectReason: preserveExisting ? (existingRelease.rejectReason || '') : ''
+                rejectReason: preserveExisting ? (existingRelease.rejectReason || '') : '',
+                moderation: preserveExisting ? (existingRelease.moderation || null) : null,
+                distribution: preserveExisting ? (existingRelease.distribution || null) : null,
+                history: preserveExisting ? (existingRelease.history || []) : []
             });
+            if(typeof aetherPrepareReleaseHistory === 'function') aetherPrepareReleaseHistory(existingRelease, releaseData, preserveExisting ? 'draft_saved' : 'draft_created');
 
             currentDraftId = finalId; 
             isDraftDirty = false;
@@ -87,7 +91,7 @@
         if(rejectBox) {
             if(r && r.status === 'Отклонён') {
                 rejectBox.classList.remove('hidden');
-                rejectBox.innerHTML = `<strong>Причина отклонения:</strong><br>${escapeHTML(r.rejectReason || 'Причина не указана')}`;
+                rejectBox.innerHTML = `<strong>Требуются исправления:</strong><br>${typeof aetherRenderModerationIssues === 'function' ? aetherRenderModerationIssues(r) : escapeHTML(r.rejectReason || 'Причина не указана')}`;
             } else {
                 rejectBox.classList.add('hidden');
                 rejectBox.innerHTML = '';
@@ -150,6 +154,7 @@
         const localUrl = URL.createObjectURL(file);
         img.src = localUrl;
         img.onload = () => { 
+            if(typeof aetherRenderArtworkTechnicalCheck === 'function') aetherRenderArtworkTechnicalCheck(file, img.width, img.height);
             if(img.width === 3000 && img.height === 3000) { 
                 document.getElementById('r_cover_box').classList.remove('error-field');
                 draftRelease.coverFile = localUrl;
@@ -234,6 +239,13 @@
             };
             newTrack._audioFileObj = file;
             draftRelease.tracks.push(newTrack);
+            if(typeof aetherInspectWavFile === 'function') {
+                aetherInspectWavFile(file).then(info => {
+                    newTrack.audioTechnical = info;
+                    renderDraftTracks();
+                    if(String(editTrackId) === String(newTrack.id) && typeof aetherRenderTrackTechnicalCheck === 'function') aetherRenderTrackTechnicalCheck(newTrack);
+                }).catch(()=>{});
+            }
 
             const audio = new Audio();
             audio.preload = 'metadata';
@@ -272,7 +284,8 @@
             const title = escapeHTML(t.title || 'Без названия');
             const filename = escapeHTML(t.filename || 'Аудиофайл');
             const audio = t.audioFile ? `<div style="margin-top:12px;"><audio controls preload="metadata" data-title="${filename}" src="${t.audioFile}"></audio></div>` : '';
-            return `<div class="track-list-item" style="${!t.isFilled ? 'border-color: var(--danger);' : ''}"><div style="flex:1;min-width:0;"><div style="font-weight: 500; font-size: 15px;">${idx+1}. ${title}</div><div class="text-sm" style="margin-top:4px;">${filename} &nbsp;|&nbsp; ${statusLabel}</div>${audio}</div><div style="display: flex; gap: 8px; flex-wrap:wrap;"><button class="btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openTrackEdit(${t.id})">Редактировать</button><button class="btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeDraftTrack(${t.id})">Удалить</button></div></div>`;
+            const tech = typeof aetherTrackTechChipsHTML === 'function' ? aetherTrackTechChipsHTML(t) : '';
+            return `<div class="track-list-item" style="${!t.isFilled ? 'border-color: var(--danger);' : ''}"><div style="flex:1;min-width:0;"><div style="font-weight: 500; font-size: 15px;">${idx+1}. ${title}</div><div class="text-sm" style="margin-top:4px;">${filename} &nbsp;|&nbsp; ${statusLabel}</div>${tech}${audio}</div><div style="display: flex; gap: 8px; flex-wrap:wrap;"><button class="btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openTrackEdit(${t.id})">Редактировать</button><button class="btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeDraftTrack(${t.id})">Удалить</button></div></div>`;
         }).join('');
         if(typeof aetherUpgradeAllAudioPlayers === 'function') aetherUpgradeAllAudioPlayers(list);
     }
@@ -298,6 +311,7 @@
         }
         if(typeof window.refreshTrackAiProofFields === 'function') window.refreshTrackAiProofFields();
         const editAudioBox = document.getElementById('trackEditAudioPlayer');
+        if(typeof aetherRenderTrackTechnicalCheck === 'function') aetherRenderTrackTechnicalCheck(t);
         if(editAudioBox) {
             if(t.audioFile) {
                 const safeFileName = escapeHTML(t.filename || t.title || 'Аудиофайл');
@@ -439,8 +453,15 @@
                 tracks: draftRelease.tracks,
                 isDeleted: false,
                 upc: document.getElementById('r_upc').value,
-                adminIsrc: existingRelease ? existingRelease.adminIsrc : ''
+                adminIsrc: existingRelease ? existingRelease.adminIsrc : '',
+                moderation: existingRelease ? (existingRelease.moderation || null) : null,
+                distribution: existingRelease ? (existingRelease.distribution || null) : null,
+                history: existingRelease ? (existingRelease.history || []) : []
             });
+            if(typeof aetherPrepareReleaseHistory === 'function') {
+                const historyContext = (existingRelease && existingRelease.status === 'Отклонён' && !isAdmin) ? 'resubmitted' : (isAdmin ? 'admin_saved' : 'submitted');
+                aetherPrepareReleaseHistory(existingRelease, releaseData, historyContext);
+            }
 
             await db.ref('releases/' + finalId).set(releaseData);
 
@@ -733,18 +754,18 @@ function renderCard(r, isAdmin) {
         const hasLyrics = tracks.some(releaseHasLyrics);
         const hasTTML = tracks.some(releaseHasTTML);
         const canEdit = currentUser.role === 'Administrator' || (!isAdmin && (r.status === 'Черновик' || r.status === 'Отклонён'));
-        const canDelete = currentUser.role === 'Administrator' || (!isAdmin && r.status === 'Черновик');
+        const canDelete = !isAdmin && currentUser.role !== 'Administrator' && r.status === 'Черновик';
         const safeId = escapeAttr(r.id);
         const showOwnerAccount = isAdmin || (currentUser && currentUser.role === 'Administrator' && !releaseBelongsToUser(r, currentUser));
         const metaAdmin = showOwnerAccount ? `<div class="release-meta-item"><div class="release-meta-label">Кабинет</div><div class="release-meta-value">${escapeHTML(r.userEmail || '—')}</div></div>` : '';
         const actions = `
-            <button class="release-icon-btn" onclick="viewReleaseAdmin('${safeId}')">${releaseIcon('info')}${releaseTooltip('Просмотр информации о релизе')}</button>
+            <button class="release-icon-btn" onclick="openReleaseHub('${safeId}')">${releaseIcon('info')}${releaseTooltip('Открыть Release Hub')}</button>
             ${canEdit ? `<button class="release-icon-btn" onclick="editDraft('${safeId}')">${releaseIcon('edit')}${releaseTooltip('Редактировать релиз')}</button>` : ''}
             <button class="release-icon-btn" onclick="duplicateRelease('${safeId}')">${releaseIcon('copy')}${releaseTooltip('Создать копию в черновиках')}</button>
-            ${canDelete ? `<button class="release-icon-btn danger" onclick="${currentUser.role === 'Administrator' ? `admDelete('${safeId}')` : `deleteDraft('${safeId}')`}">${releaseIcon('trash')}${releaseTooltip('Удалить')}</button>` : ''}
+            ${canDelete ? `<button class="release-icon-btn danger" onclick="deleteDraft('${safeId}')">${releaseIcon('trash')}${releaseTooltip('Удалить черновик')}</button>` : ''}
             ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && r.status !== 'Черновик' ? `<button class="release-icon-btn" onclick="admRevoke('${safeId}')">${releaseIcon('return')}${releaseTooltip('Отозвать с модерации')}</button>` : ''}
-            ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && r.status === 'Модерация' ? `<button class="release-icon-btn glow" onclick="admApprove('${safeId}')">✓${releaseTooltip('Одобрить')}</button><button class="release-icon-btn danger" onclick="admReject('${safeId}')">✕${releaseTooltip('Отклонить')}</button>` : ''}
-            ${isAdmin && r.isDeleted && currentUser.role === 'Administrator' ? `<button class="release-icon-btn glow" onclick="admRestore('${safeId}')">↺${releaseTooltip('Восстановить')}</button>` : ''}
+            ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && (r.status === 'Модерация' || r.status === 'Отклонён') ? `<button class="release-icon-btn" onclick="openReleaseModerationEditor('${safeId}')">☑${releaseTooltip('Детальная модерация')}</button>` : ''}
+            ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && r.status === 'Модерация' ? `<button class="release-icon-btn glow" onclick="admApprove('${safeId}')">✓${releaseTooltip('Одобрить')}</button>` : ''}
         `;
         return `<div class="release-card-pro">
             <img src="${coverSrc}" class="release-cover-pro" alt="Обложка">

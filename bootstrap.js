@@ -1,9 +1,9 @@
 (async function(){
     'use strict';
     const root=document.getElementById('aether-root');
-    const viewNames=['overview','catalog','userChat','news','guide','karaoke','promoLinks','financialReports','adminChats','newRelease','trackEdit','adminContent','questionnaires','adminUsers','adminReleases','adminDeleted'];
-    async function get(path){ const r=await fetch(path,{cache:'no-cache'}); if(!r.ok)throw new Error(`${path}: HTTP ${r.status}`); return r.text(); }
-    function loadScript(src){ return new Promise((resolve,reject)=>{ const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));document.body.appendChild(s); }); }
+    const viewNames=['overview','catalog','releaseHub','releaseCalendar','activityLog','userChat','news','guide','karaoke','promoLinks','financialReports','adminChats','newRelease','trackEdit','adminContent','questionnaires','adminUsers','adminReleases'];
+    async function get(path){ const r=await fetch(path+'?v=20260930-rm2',{cache:'no-store'}); if(!r.ok)throw new Error(`${path}: HTTP ${r.status}`); return r.text(); }
+    function loadScript(src){ return new Promise((resolve,reject)=>{ const s=document.createElement('script');s.src=src+(src.includes('?')?'&':'?')+'v=20260930-rm2';s.onload=resolve;s.onerror=()=>reject(new Error(`Не удалось загрузить ${src}`));document.body.appendChild(s); }); }
     try{
         const [globalHtml,sidebarHtml,footerHtml,...views]=await Promise.all([get('partials/global.html'),get('partials/sidebar.html'),get('partials/seo-footer.html'),...viewNames.map(v=>get(`views/${v}.html`))]);
         root.innerHTML=globalHtml;
@@ -16,7 +16,7 @@
         const scripts=[
             'js/config.js','js/firebase.js','js/core/ui.js','js/core/data.js','js/core/state.js','js/core/auth.js','js/sidebar.js','js/mobile.js','js/modules/content.js','js/modules/dashboard.js',
             'js/modules/chat-admin.js','js/modules/releases.js','js/modules/moderation.js','js/modules/promo.js','js/modules/date-picker.js','js/modules/karaoke.js','js/modules/audio.js',
-            'js/modules/questionnaires.js','js/modules/support.js','js/router.js','js/modules/ai.js','js/i18n.js','js/modules/finance.js','js/firebase-sync.js'
+            'js/modules/questionnaires.js','js/modules/support.js','js/modules/release-management.js','js/router.js','js/modules/ai.js','js/i18n.js','js/modules/finance.js','js/firebase-sync.js'
         ];
         for(const src of scripts) await loadScript(src);
 

@@ -2,14 +2,16 @@
     function refreshUI() {
         updateSidebarCounts();
         if(currentSection === 'overview') renderOverview(); 
-        if(currentSection === 'catalog') renderCatalog(); 
+        if(currentSection === 'catalog') renderCatalog();
+        if(currentSection === 'releaseHub' && typeof renderReleaseHub === 'function') renderReleaseHub();
+        if(currentSection === 'releaseCalendar' && typeof renderReleaseCalendar === 'function') renderReleaseCalendar();
+        if(currentSection === 'activityLog' && typeof renderActivityLog === 'function') renderActivityLog(); 
         if(currentSection === 'news') renderNews();
         if(currentSection === 'guide') renderGuide();
         if(currentSection === 'adminContent') renderAdminContent();
         if(currentSection === 'adminUsers') renderAdminUsers();
         if(currentSection === 'questionnaires') renderQuestionnaires(); 
         if(currentSection === 'adminReleases') renderAdminReleases(false); 
-        if(currentSection === 'adminDeleted') renderAdminReleases(true); 
         if(currentSection === 'userChat') renderUserChat(); 
         if(currentSection === 'adminChats') renderAdminChatList();
         if(currentSection === 'karaoke') renderKaraoke();

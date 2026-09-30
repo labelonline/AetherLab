@@ -82,6 +82,13 @@
         if(currentUser && currentSection === 'promoLinks') refreshUI();
     }, (err) => console.error(err));
 
+
+    db.ref('activityLog').on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        appState.activityLog = Object.values(data).filter(Boolean).sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+        if(currentUser && currentSection === 'activityLog' && typeof renderActivityLog === 'function') renderActivityLog();
+    }, (err) => console.warn('Activity log sync:', err && err.message || err));
+
     db.ref('questionnaires').on('value', (snapshot) => {
         const data = snapshot.val() || {};
         appState.questionnaires = Object.values(data).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));

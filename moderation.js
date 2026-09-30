@@ -34,7 +34,9 @@
     }
 
     function finishAdmApprove(r) {
-        r.status = 'Одобрен'; 
+        r.status = 'Одобрен';
+        if(typeof aetherAddReleaseHistory==='function') aetherAddReleaseHistory(r,'Релиз принят AetherLab','Модерация завершена. Релиз принят.','moderation');
+        if(typeof aetherRecordActivity==='function') aetherRecordActivity('moderation','Релиз принят AetherLab','Модерация завершена успешно.',r); 
         
         if (currentUser.email === ADMIN_EMAIL && r.userEmail === ADMIN_EMAIL) {
             const userOptions = appState.users.filter(u => !u.isDeletedCabinet).map(u => ({v: u.email, t: `${u.login} (${u.email})`}));
@@ -54,10 +56,13 @@
         }
     }
 
-    function admReject(id) { UI.prompt("Отклонить релиз", [{id:'reason', placeholder:'Причина'}], (res) => { const r = appState.releases.find(x => x.id === id); r.status = 'Отклонён'; r.rejectReason = res.reason || 'Не соответствует требованиям'; db.ref('releases/' + r.id).set(r); pushNotification(r.userEmail, `❌ Ваш релиз "${r.title}" был отклонен. Причина: ${r.rejectReason}`); renderAdminReleases(false); }); }
-    function admDelete(id) { UI.confirm("Перенести в удаленные?", () => { const r = appState.releases.find(x => x.id === id); r.isDeleted = true; db.ref('releases/' + r.id).set(r); renderAdminReleases(false); }); }
-    function admRestore(id) { const r = appState.releases.find(x => x.id === id); r.isDeleted = false; db.ref('releases/' + r.id).set(r); renderAdminReleases(true); }
-    function admRevoke(id) { UI.confirm("Отозвать артисту?", () => { const r = appState.releases.find(x => x.id === id); r.status = 'Черновик'; db.ref('releases/' + r.id).set(r); pushNotification(r.userEmail, `⚠️ Ваш релиз "${r.title}" был отозван модератором и возвращен в Черновики.`); renderAdminReleases(false); }); }
+    function admReject(id) {
+        if(typeof openReleaseModerationEditor === 'function') return openReleaseModerationEditor(id);
+        return UI.alert('Модерация', 'Откройте детальную модерацию релиза.');
+    }
+    function admDelete(id) { return UI.alert('Недоступно', 'Удаление релизов отключено.'); }
+    function admRestore(id) { return UI.alert('Недоступно', 'Удаление релизов отключено.'); }
+    function admRevoke(id) { UI.confirm("Отозвать артисту?", () => { const r = appState.releases.find(x => x.id === id); if(!r) return; r.status = 'Черновик'; if(typeof aetherAddReleaseHistory==='function') aetherAddReleaseHistory(r,'Релиз отозван с модерации','Администратор вернул релиз в черновики.','moderation'); if(typeof aetherRecordActivity==='function') aetherRecordActivity('moderation','Релиз отозван с модерации','Релиз возвращён в черновики.',r); db.ref('releases/' + r.id).set(r); renderAdminReleases(false); }); }
     
     function viewReleaseAdmin(id) {
         const r = appState.releases.find(x => String(x.id) === String(id));

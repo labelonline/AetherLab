@@ -1,0 +1,24 @@
+<div class="view-section hidden" id="sec-releaseCalendar">
+  <div class="release-calendar-shell">
+    <div class="release-calendar-head">
+      <div>
+        <div class="section-kicker">AetherLab • Releases</div>
+        <h2 class="release-calendar-title" id="releaseCalendarTitle">Календарь релизов</h2>
+        <p class="text-sm" id="releaseCalendarSubtitle">Все даты релизов в одном месте.</p>
+      </div>
+      <div class="release-calendar-actions">
+        <button class="btn-outline" type="button" onclick="releaseCalendarToday()">Сегодня</button>
+        <button class="calendar-arrow" type="button" onclick="releaseCalendarMove(-1)" aria-label="Предыдущий месяц">‹</button>
+        <button class="calendar-arrow" type="button" onclick="releaseCalendarMove(1)" aria-label="Следующий месяц">›</button>
+      </div>
+    </div>
+    <div class="release-calendar-toolbar">
+      <div class="release-calendar-month" id="releaseCalendarMonthLabel"></div>
+      <div class="calendar-mode-switch">
+        <button type="button" data-calendar-mode="month" onclick="setReleaseCalendarMode('month')">Месяц</button>
+        <button type="button" data-calendar-mode="list" onclick="setReleaseCalendarMode('list')">Список</button>
+      </div>
+    </div>
+    <div id="releaseCalendarRoot"></div>
+  </div>
+</div>

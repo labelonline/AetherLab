@@ -13,6 +13,7 @@
 <div style="width: 300px;">
 <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Обложка <span class="req-star">*</span></label>
 <div class="upload-box" id="r_cover_box" onclick="document.getElementById('r_cover').click()"><span class="text-sm" id="coverHint">Нажмите для загрузки<br/>3000x3000<br/><small style="display:block;margin-top:6px;color:var(--text-muted);font-size:11px;line-height:1.35;">Максимальный размер: 10 МБ</small></span><img class="upload-img hidden" id="coverPreview"/><input accept="image/*" class="hidden" id="r_cover" onchange="handleCoverUpload(this)" type="file"/></div>
+<div class="tech-check hidden" id="coverTechnicalCheck"></div>
 <div class="ai-usage-box ai-usage-box-cover">
 <label class="ai-usage-check">
 <input id="r_cover_ai" onchange="draftRelease.aiCoverUsed=this.checked; isDraftDirty=true;" type="checkbox"/>

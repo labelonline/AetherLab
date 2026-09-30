@@ -4,14 +4,11 @@
 <div style="min-width:0; flex:1;">
 <div class="portal-brand-title">AetherLab</div>
 </div>
-<div class="bell-wrap hidden" id="bellWrapDesktop" onclick="showNotifications()" title="Уведомления">
-<svg class="bell-icon" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-<div class="unread-dot hidden" id="bellDotDesktop"></div>
-</div>
 <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="window.innerWidth<=768 ? closeMobileSidebar() : toggleSidebarCollapsed()" aria-label="Свернуть боковую панель" title="Свернуть боковую панель"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
 </div>
 <button class="menu-btn primary-nav" data-section="newRelease" onclick="startNewRelease()"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span><span>Новый релиз</span></span></button>
 <button class="menu-btn active" data-section="overview" id="btn-overview" onclick="nav('overview')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path></svg></span><span>Обзор</span></span></button>
+<button class="menu-btn" data-section="releaseCalendar" id="btn-releaseCalendar" onclick="nav('releaseCalendar')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M5 4h14v16H5z"></path><path d="M8 2v4M16 2v4M5 9h14"></path><path d="M8 13h2M12 13h2M16 13h1M8 17h2M12 17h2"></path></svg></span><span>Календарь</span></span></button>
 <button aria-expanded="false" class="menu-btn nav-parent" data-nav-toggle="catalog" id="nav-toggle-catalog" onclick="toggleNavMenu('catalog', event)">
 <span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 18V6l10-2v12"></path><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg></span><span>Ваша музыка</span></span>
 <span class="nav-chevron">▼</span>
@@ -45,7 +42,7 @@
 <button class="menu-btn" data-section="adminUsers" id="btn-adminUsers" onclick="nav('adminUsers')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.6-4 4.4-6 8-6s6.4 2 8 6"></path></svg></span><span>Кабинеты</span></span></button>
 <button class="menu-btn" data-section="questionnaires" id="btn-questionnaires" onclick="nav('questionnaires')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M8 3h8l2 3h2v15H4V6h2l2-3Z"></path><path d="M9 11h6"></path><path d="M9 15h4"></path></svg></span><span>Анкеты</span></span><span class="menu-badge" id="questionnairesCount">0</span></button>
 <button class="menu-btn" data-section="adminReleases" id="btn-adminReleases" onclick="nav('adminReleases')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6l8-3Z"></path><path d="m9 12 2 2 4-4"></path></svg></span><span>Все релизы</span></span></button>
-<button class="menu-btn" data-section="adminDeleted" id="btn-adminDeleted" onclick="nav('adminDeleted')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 6h11v12H9l-5-6 5-6Z"></path><path d="m12 9 5 6M17 9l-5 6"></path></svg></span><span>Удалённые</span></span></button>
+<button class="menu-btn" data-section="activityLog" id="btn-activityLog" onclick="nav('activityLog')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 8v5l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Журнал действий</span></span></button>
 <button class="menu-btn" data-section="adminContent" id="btn-adminContent" onclick="nav('adminContent')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 3l2.2 6.2L20 12l-5.8 2.8L12 21l-2.2-6.2L4 12l5.8-2.8L12 3Z"></path></svg></span><span>Новости и инструкция</span></span></button>
 </div>
 </div>

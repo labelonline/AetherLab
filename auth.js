@@ -397,7 +397,6 @@
             document.getElementById('adminPanel').classList.remove('hidden');
             if (currentUser.email === ADMIN_EMAIL) document.getElementById('btn-wipe-db').classList.remove('hidden');
         } 
-        else { document.getElementById('bellWrapDesktop').classList.remove('hidden'); }
         
         document.getElementById('userAvatar').src = currentUser.avatar || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
         collapseSidebarMenus();
@@ -692,31 +691,18 @@
         UI.alert('Успешно', 'Аватарка обновлена.');
     }
     function pushNotification(userEmail, text) {
-        const u = appState.users.find(x => x.email === userEmail);
-        if (u) { if(!u.notifications) u.notifications = []; u.notifications.push({ text, date: new Date().toLocaleString(), read: false }); saveUserDB(u); }
+        // Global notification center was intentionally removed. Section badges/ticket dots remain.
+        return false;
     }
     function checkNotifications() {
         if (!currentUser) return;
         updateSidebarCounts();
-        const notifs = currentUser.notifications || [];
-        const unreadCount = notifs.filter(n => !n.read).length;
-        const hasBellUnread = unreadCount > 0 || hasUnreadContent('news') || hasUnreadContent('guide') || (currentUser.role === 'Administrator' && hasUnreadArtistChats()) || (currentUser.role !== 'Administrator' && !!currentUser.unreadAdminMsg);
-        const bellIcons = document.querySelectorAll('.bell-icon');
-        const bellDots = document.querySelectorAll('.unread-dot:not(#chatUnreadDot)');
-        if (hasBellUnread) { bellIcons.forEach(b => b.classList.add('shake')); bellDots.forEach(d => d.classList.remove('hidden')); } 
-        else { bellIcons.forEach(b => b.classList.remove('shake')); bellDots.forEach(d => d.classList.add('hidden')); }
         toggleDot('chatUnreadDot', currentUser.role !== 'Administrator' && !!currentUser.unreadAdminMsg);
         toggleDot('adminChatsUnreadDot', currentUser.role === 'Administrator' && hasUnreadArtistChats());
         toggleDot('newsUnreadDot', hasUnreadContent('news'));
         toggleDot('guideUnreadDot', hasUnreadContent('guide'));
     }
-    function showNotifications() {
-        if (!currentUser) return;
-        const notifs = currentUser.notifications || [];
-        const listHtml = notifs.slice().reverse().map(n => `<div style="padding: 12px; border-bottom: 1px solid var(--border); ${n.read?'opacity:0.6':''}"><div style="font-size: 13px;">${n.text}</div><div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${n.date}</div></div>`).join('');
-        UI.alert("Уведомления", listHtml ? listHtml : 'Нет новых уведомлений');
-        if (notifs.some(n => !n.read)) { currentUser.notifications.forEach(n => n.read = true); saveUserDB(currentUser); checkNotifications(); }
-    }
+    function showNotifications() { return false; }
     function setNavMenuState(menuId, open) {
         const menu = document.getElementById('nav-menu-' + menuId);
         const trigger = document.querySelector('[data-nav-toggle="' + menuId + '"]');
@@ -790,7 +776,7 @@
         currentSection = section;
         if(section === 'karaoke' || section === 'promoLinks') setNavMenuState('marketing', true);
         if(section === 'userChat' || section === 'adminChats') setNavMenuState('support', true);
-        if(['adminUsers','questionnaires','adminReleases','adminDeleted','adminContent'].includes(section)) setNavMenuState('admin', true);
+        if(['adminUsers','questionnaires','adminReleases','adminContent','activityLog'].includes(section)) setNavMenuState('admin', true);
         document.querySelectorAll('.view-section').forEach(s => { s.classList.add('hidden'); s.classList.remove('fade-in'); });
         const activeSec = document.getElementById('sec-' + section);
         if(activeSec) { activeSec.classList.remove('hidden'); void activeSec.offsetWidth; activeSec.classList.add('fade-in'); }
@@ -799,7 +785,7 @@
             const navBtn = document.querySelector(`.sidebar .menu-btn[data-section="${section}"]`);
             if(navBtn) navBtn.classList.add('active');
         }
-        const titles = { 'overview': 'Обзор', 'newRelease': 'Новый релиз', 'news': 'Новости', 'guide': 'Инструкция', 'adminContent': 'Новости и инструкция', 'adminUsers': 'Управление кабинетами', 'questionnaires': 'Анкеты', 'adminReleases': 'Все релизы', 'adminDeleted': 'Удаленные', 'userChat': 'Поддержка', 'adminChats': 'Поддержка', 'karaoke': 'Караоке текст', 'promoLinks': 'Промо-ссылки' };
+        const titles = { 'overview': 'Обзор', 'releaseCalendar':'Календарь релизов', 'releaseHub':'Релиз', 'activityLog':'Журнал действий', 'newRelease': 'Новый релиз', 'news': 'Новости', 'guide': 'Инструкция', 'adminContent': 'Новости и инструкция', 'adminUsers': 'Управление кабинетами', 'questionnaires': 'Анкеты', 'adminReleases': 'Все релизы', 'userChat': 'Поддержка', 'adminChats': 'Поддержка', 'karaoke': 'Караоке текст', 'promoLinks': 'Промо-ссылки' };
         document.getElementById('pageTitle').innerText = titles[section] || 'Раздел';
         refreshUI();
         checkNotifications();

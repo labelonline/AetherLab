@@ -165,19 +165,8 @@
         db.ref('supportTickets/' + ticket.id).set(ticket);
     }
     function addSupportNotification(userEmail, text, ticketId){
-        const u = supportUserByEmail(userEmail);
-        if(!u) return;
-        if(!Array.isArray(u.notifications)) u.notifications = [];
-        u.notifications.push({
-            id: supportId('notif'),
-            text,
-            date: new Date().toLocaleString(),
-            read: false,
-            type: 'supportTicket',
-            ticketId
-        });
-        saveUserDB(u);
-        if(currentUser && String(currentUser.email) === String(u.email)) currentUser = u;
+        // Global notifications were removed; ticket unread flags are the source of truth.
+        return false;
     }
     function notifyAdminsAboutTicket(ticket, text){
         (appState.users || []).filter(u => u.role === 'Administrator' && !u.isDeletedCabinet).forEach(admin => {
@@ -528,6 +517,7 @@
             };
             supportSetTicketActivity(ticket, ticket.createdAt);
             saveSupportTicket(ticket);
+            if(typeof aetherRecordActivity==='function') aetherRecordActivity('support','Создан тикет',`${ticket.userLogin}: ${ticket.category}`,null,{userEmail:ticket.userEmail});
             notifyAdminsAboutTicket(ticket, `Новый тикет от ${ticket.userLogin}: ${ticket.category}.`);
             supportActiveTab = 'tickets';
             supportTicketId = null;
@@ -595,6 +585,7 @@
                 notifyAdminsAboutTicket(ticket, `Новый ответ в тикете от ${currentUser.login || currentUser.email}.`);
             }
             saveSupportTicket(ticket);
+            if(typeof aetherRecordActivity==='function') aetherRecordActivity('support', isAdminReply ? 'Ответ поддержки в тикете' : 'Ответ артиста в тикете', `${ticket.userLogin || ticket.userEmail}: ${ticket.category}`, null, {userEmail:ticket.userEmail});
             supportActiveTab = 'tickets';
             supportTicketId = ticket.id;
             renderSupport();
@@ -681,25 +672,7 @@
         toggleDot('adminChatsUnreadDot', currentUser && currentUser.role === 'Administrator' && has);
     };
 
-    showNotifications = function(){
-        if(!currentUser) return;
-        const notifs = currentUser.notifications || [];
-        const listHtml = notifs.slice().reverse().map(n => {
-            const clickable = n.ticketId ? `onclick="openSupportTicketFromNotification('${escapeAttr(n.ticketId)}')"` : '';
-            const cursor = n.ticketId ? 'cursor:pointer;' : '';
-            return `<div ${clickable} style="padding:12px;border-bottom:1px solid var(--border);${n.read?'opacity:.62':''}${cursor}">
-                <div style="font-size:13px;font-weight:${n.ticketId ? '800' : '500'};">${escapeHTML(n.text || '')}</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">${escapeHTML(n.date || '')}</div>
-                ${n.ticketId ? '<div class="text-sm" style="margin-top:6px;color:#cfd8ff;">Нажмите, чтобы открыть тикет</div>' : ''}
-            </div>`;
-        }).join('');
-        UI.alert('Уведомления', listHtml || 'Нет новых уведомлений');
-        if(notifs.some(n => !n.read)) {
-            currentUser.notifications.forEach(n => n.read = true);
-            saveUserDB(currentUser);
-            checkNotifications();
-        }
-    };
+    showNotifications = function(){ return false; };
 
     function bootSupport(){
         ensureSupportSections();
