@@ -253,7 +253,7 @@
         if(max && Number(currentUser.readContent[kind] || 0) < max) {
             currentUser.readContent[kind] = max;
             saveUserDB(currentUser);
-            if(!silent) checkNotifications();
+            if(!silent) refreshUnreadIndicators();
         }
     }
     function getUnreadArtistChats() {
@@ -268,7 +268,7 @@
         if(currentUser.unreadArtistChats && currentUser.unreadArtistChats[safe]) {
             currentUser.unreadArtistChats[safe] = false;
             saveUserDB(currentUser);
-            if(!silent) checkNotifications();
+            if(!silent) refreshUnreadIndicators();
         }
     }
     function markAdminsUnreadForChat(userEmail) {

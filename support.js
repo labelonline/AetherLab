@@ -138,7 +138,7 @@
         });
         if(changed) {
             if(currentUser && (currentSection === 'userChat' || currentSection === 'adminChats')) renderSupport();
-            if(currentUser) checkNotifications();
+            if(currentUser) refreshUnreadIndicators();
         }
     }
     function startSupportAutoCloseWatcher(){
@@ -163,15 +163,6 @@
         const idx = appState.supportTickets.findIndex(t => String(t.id) === String(ticket.id));
         if(idx >= 0) appState.supportTickets[idx] = ticket; else appState.supportTickets.unshift(ticket);
         db.ref('supportTickets/' + ticket.id).set(ticket);
-    }
-    function addSupportNotification(userEmail, text, ticketId){
-        // Global notifications were removed; ticket unread flags are the source of truth.
-        return false;
-    }
-    function notifyAdminsAboutTicket(ticket, text){
-        (appState.users || []).filter(u => u.role === 'Administrator' && !u.isDeletedCabinet).forEach(admin => {
-            addSupportNotification(admin.email, text || `Новый тикет от ${ticket.userLogin || ticket.userEmail}.`, ticket.id);
-        });
     }
     function hasSupportUnread(){
         if(!currentUser) return false;
@@ -255,7 +246,7 @@
             </div>`;
         if(supportActiveTab === 'tickets') renderSupportTickets();
         else renderSupportQuestions();
-        checkNotifications();
+        refreshUnreadIndicators();
     }
     function renderSupportQuestions(){
         const area = document.getElementById('supportWorkArea');
@@ -305,7 +296,7 @@
                 const chat = area.querySelector('.support-chat');
                 if(chat) chat.scrollIntoView({ block: 'end', behavior: 'smooth' });
             });
-            checkNotifications();
+            refreshUnreadIndicators();
             return;
         }
         if(!list.length) {
@@ -417,7 +408,7 @@
                 if(chat) chat.scrollIntoView({ block:'end', behavior:'smooth' });
                 else if(area) area.scrollIntoView({ block:'start', behavior:'smooth' });
             });
-            checkNotifications();
+            refreshUnreadIndicators();
         }, 0);
     };
     window.backToSupportTickets = function(){ supportTicketId = null; renderSupportTickets(); };
@@ -518,7 +509,6 @@
             supportSetTicketActivity(ticket, ticket.createdAt);
             saveSupportTicket(ticket);
             if(typeof aetherRecordActivity==='function') aetherRecordActivity('support','Создан тикет',`${ticket.userLogin}: ${ticket.category}`,null,{userEmail:ticket.userEmail});
-            notifyAdminsAboutTicket(ticket, `Новый тикет от ${ticket.userLogin}: ${ticket.category}.`);
             supportActiveTab = 'tickets';
             supportTicketId = null;
             renderSupport();
@@ -577,12 +567,10 @@
                 ticket.lastAdminReplyAt = createdAt;
                 ticket.unreadForArtist = true;
                 ticket.unreadForAdmin = false;
-                addSupportNotification(ticket.userEmail, 'AetherLab | Поддержка ответила на ваш тикет.', ticket.id);
             } else {
                 ticket.lastArtistReplyAt = createdAt;
                 ticket.unreadForAdmin = true;
                 ticket.unreadForArtist = false;
-                notifyAdminsAboutTicket(ticket, `Новый ответ в тикете от ${currentUser.login || currentUser.email}.`);
             }
             saveSupportTicket(ticket);
             if(typeof aetherRecordActivity==='function') aetherRecordActivity('support', isAdminReply ? 'Ответ поддержки в тикете' : 'Ответ артиста в тикете', `${ticket.userLogin || ticket.userEmail}: ${ticket.category}`, null, {userEmail:ticket.userEmail});
@@ -603,16 +591,6 @@
             saveSupportTicket(ticket);
             renderSupport();
         });
-    };
-    window.openSupportTicketFromNotification = function(ticketId){
-        const alert = document.getElementById('uiAlert');
-        if(alert) alert.classList.add('hidden');
-        supportActiveTab = 'tickets';
-        supportTicketId = ticketId;
-        if(supportIsAdmin()) nav('adminChats', true); else nav('userChat', true);
-        setSupportPath('tickets');
-        supportHighlightNav();
-        renderSupport();
     };
     function showSupportToast(text){
         const old = document.querySelector('.support-mini-toast');
@@ -644,7 +622,7 @@
         }).filter(Boolean).sort((a,b)=>Number(b.updatedAt||b.createdAt||0)-Number(a.updatedAt||a.createdAt||0));
         closeExpiredSupportTickets();
         if(currentUser && (currentSection === 'userChat' || currentSection === 'adminChats')) renderSupport();
-        if(currentUser) checkNotifications();
+        if(currentUser) refreshUnreadIndicators();
     }, (err) => console.error(err));
 
     const __kiteOldRenderUserChat = typeof renderUserChat === 'function' ? renderUserChat : null;
@@ -659,20 +637,13 @@
         toggleDot('chatUnreadDot', currentUser && currentUser.role !== 'Administrator' && has);
         toggleDot('adminChatsUnreadDot', currentUser && currentUser.role === 'Administrator' && has);
     };
-
-    const __kiteOldCheckNotifications = checkNotifications;
-    checkNotifications = function(){
-        __kiteOldCheckNotifications();
+    const __aetherOldRefreshUnreadIndicators = refreshUnreadIndicators;
+    refreshUnreadIndicators = function(){
+        __aetherOldRefreshUnreadIndicators();
         const has = hasSupportUnread();
-        if(has) {
-            document.querySelectorAll('.bell-icon').forEach(b => b.classList.add('shake'));
-            document.querySelectorAll('.unread-dot:not(#chatUnreadDot)').forEach(d => d.classList.remove('hidden'));
-        }
         toggleDot('chatUnreadDot', currentUser && currentUser.role !== 'Administrator' && has);
         toggleDot('adminChatsUnreadDot', currentUser && currentUser.role === 'Administrator' && has);
     };
-
-    showNotifications = function(){ return false; };
 
     function bootSupport(){
         ensureSupportSections();

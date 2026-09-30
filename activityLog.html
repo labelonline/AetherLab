@@ -4,7 +4,7 @@
       <div>
         <div class="section-kicker">AetherLab • Admin</div>
         <h2>Журнал действий</h2>
-        <p class="text-sm">Неизменяемая история ключевых действий в кабинете.</p>
+        <p class="text-sm">История ключевых действий в кабинете: кто, что и когда изменил.</p>
       </div>
       <div class="activity-log-search-wrap"><input id="activityLogSearch" type="search" placeholder="Поиск по артисту, релизу или действию..." oninput="renderActivityLog()"></div>
     </div>
@@ -14,6 +14,7 @@
       <button data-log-filter="moderation" onclick="setActivityLogFilter('moderation')">Модерация</button>
       <button data-log-filter="user" onclick="setActivityLogFilter('user')">Пользователи</button>
       <button data-log-filter="support" onclick="setActivityLogFilter('support')">Поддержка</button>
+      <button data-log-filter="finance" onclick="setActivityLogFilter('finance')">Финансы</button>
       <button data-log-filter="system" onclick="setActivityLogFilter('system')">Система</button>
     </div>
     <div id="activityLogRoot"></div>

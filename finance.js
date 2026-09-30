@@ -464,6 +464,7 @@
                 syncFinanceNav();
                 try{renderOverviewFinancePreview();}catch(e){}
                 try{if(currentSection==='financialReports')renderFinancialReports();}catch(e){}
+                try{if(currentSection==='releaseHub' && window.currentReleaseHubTab==='finance' && typeof renderReleaseHub==='function')renderReleaseHub();}catch(e){}
             },err=>console.error('Finance reports:',err));
         }catch(e){console.error('Finance listener:',e);}
     }
@@ -628,6 +629,7 @@
             }
 
             financeState.draft=null;
+            try{ if(typeof aetherRecordActivity==='function') aetherRecordActivity('finance','Загружен финансовый отчёт',`${baseReport.quarter || 'Отчёт'}: ${baseReport.summary && baseReport.summary.matchedRows || 0} строк, ${baseReport.summary && baseReport.summary.matchedReleaseCount || 0} релизов.`,null,{financeReportId:baseReport.id||''}); }catch(e){}
             bindFinanceReportsForCurrentUser(); renderFinancialReports(); syncFinanceNav();
             UI.alert(ft('publishedTitle'),ft('publishedText'));
         }catch(err){
@@ -703,6 +705,7 @@
                 for(const key of cabinetKeys){await db.ref(`${FINANCE_CABINET_NODE}/${key}/${id}`).remove();}
                 for(const key of adminKeys){await db.ref(`${FINANCE_ADMIN_NODE}/${key}/${id}`).remove();}
                 await db.ref(`${FINANCE_MASTER_NODE}/${id}`).remove();
+                try{ if(typeof aetherRecordActivity==='function') aetherRecordActivity('finance','Удалён финансовый отчёт',report && report.quarter ? `Удалён отчёт ${report.quarter}.` : 'Удалён финансовый отчёт.',null,{financeReportId:id}); }catch(e){}
                 UI.alert(ft('title'),ft('deleted'));
             }catch(err){console.error(err);UI.alert(ft('title'),ft('parseError'));}
         });

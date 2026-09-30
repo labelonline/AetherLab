@@ -192,7 +192,6 @@
                 passwordHistory: [{pass, date: new Date().toLocaleString()}],
                 isBanned: false,
                 banReason: '',
-                notifications: [],
                 unreadAdminMsg: false,
                 unreadArtistChats: {},
                 readContent: {},
@@ -211,6 +210,7 @@
                 appState.users.push(newUser);
                 await db.ref('users/' + newUser.id).set(newUser);
                 await db.ref('questionnaires/' + q.id).set(q);
+                try{ if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Создан новый пользователь',`Создан кабинет ${login} (${userEmail}) из анкеты.`,null,{userEmail:userEmail,targetUserId:newUser.id}); }catch(e){}
                 renderQuestionnaires();
                 if(currentSection === 'adminUsers') renderAdminUsers();
                 UI.alert('Кабинет открыт', `Анкета принята, кабинет артиста создан.<br><br><b>Логин:</b> ${escapeHTML(login)}<br><b>Почта:</b> ${escapeHTML(userEmail)}<br><b>Пароль:</b> <code>${escapeHTML(pass)}</code>`);

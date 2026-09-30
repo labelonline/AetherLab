@@ -16,7 +16,7 @@
         appendChatMessage(currentUser.email, msg);
         renderUserChat();
         markAdminsUnreadForChat(currentUser.email);
-        checkNotifications();
+        refreshUnreadIndicators();
         sendEmailNotification("Новое сообщение в поддержку AetherLab", `Артист ${currentUser.login} (${currentUser.email}) написал вам:\n\n"${msgText}"`);
     }
     function renderAdminChatList() {
@@ -37,7 +37,7 @@
             clearArtistChatUnread(activeAdminChatUser, true);
         }
     }
-    function selectAdminChat(email) { activeAdminChatUser = email; document.getElementById('adminChatInputArea').classList.remove('hidden'); clearArtistChatUnread(email, true); renderAdminChatList(); checkNotifications(); }
+    function selectAdminChat(email) { activeAdminChatUser = email; document.getElementById('adminChatInputArea').classList.remove('hidden'); clearArtistChatUnread(email, true); renderAdminChatList(); refreshUnreadIndicators(); }
     function sendMessageAsAdmin() {
         if(!activeAdminChatUser) return;
         const input = document.getElementById('adminChatInput');
@@ -54,7 +54,7 @@
             u.unreadAdminMsg = true;
             saveUserDB(u);
         }
-        checkNotifications();
+        refreshUnreadIndicators();
     }
     function showCreateCabinetDialog() {
         const roles = [{v: 'Administrator', t: 'Администратор'}, {v: 'Artist', t: 'Артист'}];
@@ -65,7 +65,7 @@
                 let checkEmail = userData.email.toLowerCase();
                 if(appState.users.find(x => x.email === checkEmail)) return UI.alert("Ошибка", "Почта уже занята");
                 if(appState.users.find(x => String(x.login || '').trim().toLowerCase() === String(userData.login || '').trim().toLowerCase() && !x.isDeletedCabinet)) return UI.alert("Ошибка", "Логин уже занят");
-                const newUser = { id: 'u' + Date.now(), login: userData.login, email: checkEmail, pass: userData.pass, role: res.role, createdByAdminId: currentUser && currentUser.id ? String(currentUser.id) : '', createdByAdminEmail: currentUser && currentUser.email ? String(currentUser.email).toLowerCase().trim() : '', createdByAdminLogin: currentUser && currentUser.login ? String(currentUser.login) : '', passwordHistory: [{pass: userData.pass, date: new Date().toLocaleString()}], isBanned: false, banReason: '', notifications: [], unreadAdminMsg: false, unreadArtistChats: {}, readContent: {}, avatar: '', isDeletedCabinet: false };
+                const newUser = { id: 'u' + Date.now(), login: userData.login, email: checkEmail, pass: userData.pass, role: res.role, createdByAdminId: currentUser && currentUser.id ? String(currentUser.id) : '', createdByAdminEmail: currentUser && currentUser.email ? String(currentUser.email).toLowerCase().trim() : '', createdByAdminLogin: currentUser && currentUser.login ? String(currentUser.login) : '', passwordHistory: [{pass: userData.pass, date: new Date().toLocaleString()}], isBanned: false, banReason: '', unreadAdminMsg: false, unreadArtistChats: {}, readContent: {}, avatar: '', isDeletedCabinet: false };
                 saveUserDB(newUser); if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Создан кабинет',`${newUser.login} (${newUser.email})`,null,{userEmail:newUser.email}); UI.alert("Успешно", "Новый кабинет успешно открыт."); if(currentSection === 'adminUsers') renderAdminUsers();
         if(currentSection === 'questionnaires') renderQuestionnaires();
             });

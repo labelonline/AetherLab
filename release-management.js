@@ -1,14 +1,14 @@
-/* AetherLab Release Management Update */
+/* AetherLab Release Management 2.0 */
 (function(){
     'use strict';
 
     const MODERATION_CHECKS = [
         ['cover','Обложка'],
-        ['metadata','Основные данные'],
-        ['title','Название релиза'],
+        ['audio','Аудио'],
+        ['title','Название'],
         ['artist','Исполнитель'],
+        ['metadata','Основные данные'],
         ['tracks','Трек-лист'],
-        ['audio','Аудиофайлы'],
         ['credits','Авторы / композиторы'],
         ['explicit','Explicit'],
         ['language','Язык'],
@@ -24,11 +24,12 @@
     const DELIVERY_LABELS = {
         not_started:'Не начата',
         preparing:'Подготовка',
-        delivered:'Отправлено площадкам',
+        delivered:'Доставлен площадкам',
         published:'Опубликован'
     };
-    const LOG_CATEGORY_LABELS = {release:'Релизы', moderation:'Модерация', user:'Пользователи', support:'Поддержка', system:'Система'};
-    const LOG_CATEGORY_ICON = {release:'♫', moderation:'✓', user:'◎', support:'✉', system:'◇'};
+    const LOG_CATEGORY_LABELS = {release:'Релизы', moderation:'Модерация', user:'Пользователи', support:'Поддержка', finance:'Финансы', system:'Система'};
+    const LOG_CATEGORY_ICON = {release:'♫', moderation:'✓', user:'◎', support:'✉', finance:'€', system:'◇'};
+
     window.currentReleaseHubId = window.currentReleaseHubId || null;
     window.currentReleaseHubTab = window.currentReleaseHubTab || 'overview';
     window.releaseCalendarMode = window.releaseCalendarMode || 'month';
@@ -53,7 +54,8 @@
         const r = (appState.releases || []).find(x => String(x.id) === String(id));
         if(!r || r.isDeleted) return null;
         try {
-            if(typeof releaseBelongsToUser === 'function' && currentUser && currentUser.role !== 'Administrator' && !releaseBelongsToUser(r,currentUser)) return null;
+            if(currentUser && currentUser.role === 'Administrator') return r;
+            if(typeof releaseBelongsToUser === 'function' && currentUser && !releaseBelongsToUser(r,currentUser)) return null;
         } catch(e){}
         return r;
     }
@@ -135,82 +137,155 @@
         return next;
     };
 
-    function hubInfo(label,value){ return `<div class="rm-info"><div class="rm-info-label">${esc(label)}</div><div class="rm-info-value">${esc(value || '—')}</div></div>`; }
+    function moderationData(r){
+        const m=r && r.moderation && typeof r.moderation==='object'?r.moderation:{};
+        const checks=m.checks && typeof m.checks==='object'?m.checks:{};
+        return {m,checks};
+    }
+    function moderationIssue(r,key){
+        const item=moderationData(r).checks[key];
+        if(!item || !['error','warn'].includes(item.state)) return null;
+        return {key,state:item.state,label:(MODERATION_CHECKS.find(x=>x[0]===key)||[])[1]||key,comment:String(item.comment||MODERATION_STATES[item.state].label)};
+    }
+    window.aetherGetModerationIssue=function(r,key){return moderationIssue(r,key);};
+    window.aetherModerationIssueHTML=function(r,key,extraClass=''){
+        const issue=moderationIssue(r,key); if(!issue) return '';
+        return `<div class="aether-inline-moderation-issue ${issue.state} ${esc(extraClass)}" data-moderation-issue="${attr(key)}"><span>${issue.state==='error'?'!':'i'}</span><div><strong>${esc(issue.label)}</strong><div>${esc(issue.comment)}</div></div></div>`;
+    };
+    window.aetherClearModerationInlineIssues=function(){ document.querySelectorAll('.aether-inline-moderation-issue[data-form-injected="1"],.track-editor-moderation-issue').forEach(el=>el.remove()); };
+    function injectIssueAfter(target,r,key,trackEditor){
+        const issue=moderationIssue(r,key); if(!target||!issue) return;
+        const holder=document.createElement('div'); holder.innerHTML=window.aetherModerationIssueHTML(r,key,trackEditor?'track-editor-moderation-issue':'');
+        const node=holder.firstElementChild; if(!node)return; node.dataset.formInjected='1';
+        target.insertAdjacentElement('afterend',node);
+    }
+    window.aetherApplyModerationIssuesToReleaseForm=function(r){
+        window.aetherClearModerationInlineIssues();
+        if(!r) return;
+        const title=document.getElementById('r_title');
+        const artist=document.getElementById('r_artist_container');
+        const type=document.getElementById('r_type');
+        const cover=document.getElementById('coverTechnicalCheck') || document.getElementById('r_cover_box');
+        const tracks=document.getElementById('draftTracksList');
+        injectIssueAfter(title && title.closest('.form-group'),r,'title');
+        injectIssueAfter(artist && artist.closest('.form-group'),r,'artist');
+        injectIssueAfter(type && type.closest('.form-group'),r,'metadata');
+        injectIssueAfter(cover,r,'cover');
+        ['audio','tracks','credits','explicit','language','lyrics','ai'].forEach(key=>injectIssueAfter(tracks,r,key));
+    };
+    window.aetherApplyTrackModerationIssues=function(r){
+        document.querySelectorAll('.track-editor-moderation-issue').forEach(el=>el.remove());
+        if(!r)return;
+        injectIssueAfter(document.getElementById('trackTechnicalCheck'),r,'audio',true);
+        const map={tracks:'t_title',credits:'t_author_container',explicit:'t_explicit',language:'t_lang',lyrics:'t_lyrics',ai:'trackAiUsageBox'};
+        Object.entries(map).forEach(([key,id])=>{const el=document.getElementById(id); injectIssueAfter(el && (el.closest('.form-group')||el),r,key,true);});
+    };
+
+    function hubInfo(label,value,issue){
+        return `<div class="rm-info ${issue?'has-issue '+issue.state:''}"><div class="rm-info-label">${esc(label)}</div><div class="rm-info-value">${esc(value || '—')}</div>${issue?`<div class="rm-info-issue ${issue.state}">${esc(issue.comment)}</div>`:''}</div>`;
+    }
+    function historyHas(r,patterns){
+        const p=Array.isArray(patterns)?patterns:[patterns];
+        return releaseHistoryArray(r).some(h=>p.some(x=>String(h.title||'').toLowerCase().includes(String(x).toLowerCase())||String(h.detail||'').toLowerCase().includes(String(x).toLowerCase())));
+    }
     function renderReleaseStages(r){
         const status=r.status||'Черновик';
+        const sent=status!=='Черновик'||historyHas(r,['отправлен на модерацию','повторно']);
+        const moderation=sent&&(status==='Модерация'||status==='Отклонён'||status==='Одобрен'||historyHas(r,['модерац','провер']));
+        const fixed=historyHas(r,['исправления отправлены повторно','внёс исправления','повторно отправил']);
+        const accepted=status==='Одобрен'||historyHas(r,['релиз принят aetherlab','модерация завершена успешно']);
+        const delivered=['delivered','published'].includes(r.distribution&&r.distribution.status);
         const items=[
             ['Создан','Релиз создан в кабинете',true],
-            ['Отправлен на модерацию','Передан команде AetherLab',status!=='Черновик'],
-            ['Проверка метаданных','Модератор проверяет данные и файлы',status==='Модерация'||status==='Отклонён'||status==='Одобрен'],
-            ['Принят AetherLab','Модерация завершена',status==='Одобрен'],
-            ['Доставка','Подготовка/отправка на площадки',['preparing','delivered','published'].includes(r.distribution && r.distribution.status)],
-            ['Опубликован','Релиз отмечен как опубликованный',r.distribution && r.distribution.status==='published']
+            ['Отправлен','Передан на проверку AetherLab',sent],
+            ['На модерации','Проверяются данные, обложка и аудио',moderation],
+            ['Исправлен','Артист отправил исправления после замечаний',fixed],
+            ['Принят','Модерация завершена успешно',accepted],
+            ['Доставлен','Релиз отправлен на музыкальные площадки',delivered]
         ];
-        let foundCurrent=false;
-        return `<div class="rm-timeline">${items.map((x,i)=>{
+        let currentAssigned=false;
+        return `<div class="rm-timeline">${items.map(x=>{
             const done=!!x[2];
-            const current=!done && !foundCurrent && (foundCurrent=true);
+            const current=!done&&!currentAssigned&&(currentAssigned=true);
             return `<div class="rm-timeline-item ${done?'done':current?'current':''}"><span class="rm-timeline-dot"></span><div class="rm-timeline-title">${esc(x[0])}</div><div class="rm-timeline-sub">${esc(x[1])}</div></div>`;
         }).join('')}</div>`;
     }
+    function renderModerationSummary(r){
+        const {m,checks}=moderationData(r);
+        const issueRows=MODERATION_CHECKS.map(([key,label])=>{const item=checks[key]; if(!item||!['error','warn'].includes(item.state))return''; const state=MODERATION_STATES[item.state]; return `<div class="rm-check-row compact"><div class="rm-check-name">${esc(label)}</div><div class="rm-check-state ${state.cls}">${esc(state.label)}</div><div class="rm-check-comment">${esc(item.comment||state.label)}</div></div>`;}).filter(Boolean).join('');
+        const admin=currentUser&&currentUser.role==='Administrator';
+        if(!issueRows&&!m.summary&&!admin) return '';
+        return `<div class="rm-panel"><div class="rm-panel-heading-row"><div><h3>Модерация по полям</h3><p class="text-sm">Замечания привязаны к конкретным элементам релиза.</p></div>${admin?`<button class="btn-primary" onclick="openReleaseModerationEditor('${attr(r.id)}')">Проверить релиз</button>`:''}</div>${issueRows?`<div class="rm-moderation-list" style="margin-top:15px;">${issueRows}</div>`:`<div class="rm-empty rm-empty-small">Замечаний по полям сейчас нет.</div>`}${m.summary?`<div class="rm-moderation-summary"><strong>Комментарий модератора</strong><div>${esc(m.summary)}</div></div>`:''}</div>`;
+    }
+    function syntheticHistory(r){
+        const list=releaseHistoryArray(r).slice();
+        if(!list.length) list.push({id:'legacy-created',title:'История релиза',detail:'Подробная история начнёт формироваться с обновления Release Hub 2.0.',createdAt:Date.now()-1000,type:'system',actor:{name:'AetherLab'}});
+        return list.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+    }
+    function renderHistoryPreview(r){
+        const list=syntheticHistory(r).slice(0,8);
+        return `<div class="rm-panel"><h3>История релиза</h3><div class="rm-history-list">${list.map(item=>`<div class="rm-history-row"><div class="rm-history-dot"></div><div><div class="rm-history-title">${esc(item.title||'Действие')}</div><div class="rm-history-detail">${esc(item.detail||'')}</div><div class="rm-history-meta">${esc(formatDateTime(item.createdAt))}${item.actor&&item.actor.name?' • '+esc(item.actor.name):''}</div></div></div>`).join('')}</div></div>`;
+    }
     function renderHubOverview(r){
         return `<div class="rm-panel"><h3>Обзор релиза</h3><div class="rm-grid">
-            ${hubInfo('Формат',r.type)}${hubInfo('Дата релиза',formatDateOnly(r.releaseDate))}${hubInfo('Оригинальная дата',formatDateOnly(r.originalReleaseDate))}${hubInfo('UPC',r.upc)}${hubInfo('Жанр',r.genre)}${hubInfo('Год',r.year)}
-        </div></div><div class="rm-panel"><h3>Статус релиза</h3>${renderReleaseStages(r)}</div>`;
+            ${hubInfo('Формат',r.type,moderationIssue(r,'metadata'))}${hubInfo('Дата релиза',formatDateOnly(r.releaseDate),moderationIssue(r,'metadata'))}${hubInfo('Оригинальная дата',formatDateOnly(r.originalReleaseDate),null)}${hubInfo('UPC',r.upc,null)}${hubInfo('Жанр',r.genre,moderationIssue(r,'metadata'))}${hubInfo('Год',r.year,moderationIssue(r,'metadata'))}
+        </div></div><div class="rm-panel"><h3>Путь релиза</h3>${renderReleaseStages(r)}</div>${renderModerationSummary(r)}${renderHistoryPreview(r)}`;
     }
     function audioTechChips(t){
-        const q=t && t.audioTechnical;
-        if(!q) return '';
-        const sr=q.sampleRate ? `${Math.round(q.sampleRate/100)/10} kHz` : 'Sample rate —';
-        const bit=q.bitDepth ? `${q.bitDepth}-bit` : 'Bit depth —';
+        const q=t&&t.audioTechnical; if(!q)return'';
+        if(!q.valid) return `<div class="track-tech-inline"><span class="track-tech-chip error">WAV: ошибка чтения</span></div>`;
+        const sr=q.sampleRate?`${Math.round(q.sampleRate/100)/10} kHz`:'Sample rate —';
+        const bit=q.bitDepth?`${q.bitDepth}-bit`:'Bit depth —';
         const ch=q.channels===2?'Stereo':q.channels===1?'Mono':(q.channels?`${q.channels} ch`:'Channels —');
-        return `<div class="track-tech-inline"><span class="track-tech-chip ${q.sampleRate>=44100?'ok':'warn'}">${esc(sr)}</span><span class="track-tech-chip ${q.bitDepth>=24?'ok':'warn'}">${esc(bit)}</span><span class="track-tech-chip ${q.channels===2?'ok':'warn'}">${esc(ch)}</span></div>`;
+        return `<div class="track-tech-inline"><span class="track-tech-chip ${q.sampleRate>=44100?'ok':'error'}">${esc(sr)}</span><span class="track-tech-chip ${q.bitDepth>=16?'ok':'error'}">${esc(bit)}</span><span class="track-tech-chip ${q.channels===2?'ok':'error'}">${esc(ch)}</span></div>`;
     }
     function renderHubTracks(r){
         const tracks=Array.isArray(r.tracks)?r.tracks:[];
         if(!tracks.length) return `<div class="rm-panel"><div class="rm-empty">Трек-лист пока пуст.</div></div>`;
-        return `<div class="rm-panel"><h3>Трек-лист</h3><div class="rm-track-list">${tracks.map((t,i)=>{
+        const keys=['audio','tracks','credits','explicit','language','lyrics','ai'];
+        const issues=keys.map(k=>moderationIssue(r,k)).filter(Boolean);
+        return `<div class="rm-panel"><div class="rm-panel-heading-row"><div><h3>Треки</h3><p class="text-sm">Аудио, ISRC, метаданные и техническая проверка.</p></div><span class="rm-track-count">${tracks.length}</span></div>${issues.length?`<div class="rm-track-issues">${issues.map(i=>`<div class="aether-inline-moderation-issue ${i.state}"><span>${i.state==='error'?'!':'i'}</span><div><strong>${esc(i.label)}</strong><div>${esc(i.comment)}</div></div></div>`).join('')}</div>`:''}<div class="rm-track-list">${tracks.map((t,i)=>{
             const src=t.audioFile||'';
             return `<div class="rm-track-card"><div class="rm-track-num">${i+1}</div><div><div class="rm-track-head"><div><div class="rm-track-title">${esc(t.title||r.title||'Без названия')}</div><div class="rm-track-sub">${esc(t.artist||r.artist||'—')}</div></div><span class="badge badge-draft">${esc(t.duration||'—')}</span></div><div class="rm-track-meta"><span>${esc(t.type||'Original')}</span><span>${esc(t.lang||'Язык —')}</span><span>ISRC: ${esc(t.isrc||'—')}</span><span>Explicit: ${esc(t.explicit||'Нет')}</span></div>${audioTechChips(t)}${src?`<audio controls preload="metadata" data-title="${attr((t.artist||r.artist||'')+' — '+(t.title||r.title||''))}" src="${attr(src)}"></audio>`:''}</div></div>`;
         }).join('')}</div></div>`;
     }
-    function moderationData(r){
-        const m=r.moderation && typeof r.moderation==='object'?r.moderation:{};
-        const checks=m.checks && typeof m.checks==='object'?m.checks:{};
-        return {m,checks};
-    }
-    function renderHubModeration(r){
-        const {m,checks}=moderationData(r);
-        const rows=MODERATION_CHECKS.map(([key,label])=>{
-            const item=checks[key]||{}; const state=MODERATION_STATES[item.state]||MODERATION_STATES.pending;
-            return `<div class="rm-check-row"><div class="rm-check-name">${esc(label)}</div><div class="rm-check-state ${state.cls}">${esc(state.label)}</div><div class="rm-check-comment">${esc(item.comment||'Комментарий не добавлен.')}</div></div>`;
-        }).join('');
-        const admin=currentUser && currentUser.role==='Administrator';
-        return `<div class="rm-panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;"><div><h3>Модерация</h3><p class="text-sm">Проверка конкретных элементов релиза без общего абстрактного отказа.</p></div>${admin?`<button class="btn-primary" onclick="openReleaseModerationEditor('${attr(r.id)}')">Проверить релиз</button>`:''}</div><div class="rm-moderation-list" style="margin-top:15px;">${rows}</div>${m.summary?`<div class="rm-issue-banner" style="margin-top:14px;"><h4>Комментарий модератора</h4><div class="rm-check-comment">${esc(m.summary)}</div></div>`:''}</div>`;
-    }
     function renderHubDelivery(r){
         const status=(r.distribution&&r.distribution.status)||'not_started';
         const admin=currentUser&&currentUser.role==='Administrator';
-        const note=(r.distribution&&r.distribution.note)||'Статус обновляется вручную командой AetherLab. Автоматической проверки статуса у площадок сейчас нет.';
+        const note=(r.distribution&&r.distribution.note)||'Статус доставки обновляется командой AetherLab.';
         const select=Object.entries(DELIVERY_LABELS).map(([v,t])=>`<option value="${v}" ${v===status?'selected':''}>${esc(t)}</option>`).join('');
         return `<div class="rm-panel"><h3>Доставка</h3><div class="rm-delivery-card"><div><div class="rm-delivery-status">${esc(DELIVERY_LABELS[status]||status)}</div><div class="rm-delivery-note">${esc(note)}</div></div>${admin?`<div class="rm-delivery-admin"><select id="releaseDeliveryStatus">${select}</select><button class="btn-primary" onclick="saveReleaseDeliveryStatus('${attr(r.id)}')">Сохранить</button></div>`:''}</div></div>`;
     }
-    function syntheticHistory(r){
-        const list=releaseHistoryArray(r).slice();
-        if(!list.length){
-            list.push({id:'legacy-created',title:'Релиз уже существовал до журнала истории',detail:'Подробная история начнёт формироваться с этого обновления.',createdAt:Date.now()-1000,type:'system',actor:{name:'AetherLab'}});
-        }
-        return list.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+    function financeRowsForRelease(r){
+        const reports=(window.AetherFinance&&Array.isArray(window.AetherFinance.reports))?window.AetherFinance.reports:[];
+        const groups=[];
+        reports.forEach(report=>{
+            const rows=[];
+            (Array.isArray(report.sheets)?report.sheets:[]).forEach(sh=>{
+                (Array.isArray(sh.rows)?sh.rows:[]).forEach(row=>{
+                    const idMatch=String(row.releaseId||'')===String(r.id||'');
+                    const upcMatch=!row.releaseId&&r.upc&&String(row.releaseUPC||'')===String(r.upc);
+                    if(idMatch||upcMatch) rows.push(row);
+                });
+            });
+            if(rows.length){
+                const amount=rows.reduce((sum,row)=>sum+(Number.isFinite(Number(row.amountEUR))?Number(row.amountEUR):Number(row.amountScaled||0)/100000000),0);
+                groups.push({report,rows,amount});
+            }
+        });
+        return groups.sort((a,b)=>Number(b.report.publishedAt||b.report.loadedAt||0)-Number(a.report.publishedAt||a.report.loadedAt||0));
     }
-    function renderHubHistory(r){
-        const list=syntheticHistory(r);
-        return `<div class="rm-panel"><h3>История релиза</h3><div class="rm-timeline">${list.map(item=>`<div class="rm-timeline-item done"><span class="rm-timeline-dot"></span><div class="rm-timeline-title">${esc(item.title||'Действие')}</div><div class="rm-timeline-sub">${esc(item.detail||'')}<br><span style="opacity:.72">${esc(formatDateTime(item.createdAt))}${item.actor&&item.actor.name?' • '+esc(item.actor.name):''}</span></div></div>`).join('')}</div></div>`;
+    function euro(v){try{return new Intl.NumberFormat('ru-RU',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:8}).format(Number(v)||0);}catch(e){return (Number(v)||0).toFixed(2)+' EUR';}}
+    function renderHubFinance(r){
+        const groups=financeRowsForRelease(r);
+        if(!groups.length) return `<div class="rm-panel"><div class="rm-panel-heading-row"><div><h3>Финансы</h3><p class="text-sm">Сюда автоматически попадут строки финансовых отчётов, сопоставленные с этим релизом.</p></div></div><div class="rm-empty">По этому релизу пока нет финансовых данных.</div></div>`;
+        const total=groups.reduce((s,g)=>s+g.amount,0);
+        return `<div class="rm-finance-summary"><div class="rm-finance-total"><span>Доход по релизу</span><strong>${esc(euro(total))}</strong><small>${groups.reduce((s,g)=>s+g.rows.length,0)} строк отчётов</small></div><div class="rm-finance-reports">${groups.map(g=>`<div class="rm-finance-report"><div><div class="rm-finance-quarter">${esc(g.report.quarter||'Финансовый отчёт')}</div><div class="rm-finance-meta">${g.report.publishedAt?esc(formatDateTime(g.report.publishedAt)):''} · ${g.rows.length} строк</div></div><strong>${esc(euro(g.amount))}</strong></div>`).join('')}</div></div><div class="rm-panel"><p class="text-sm" style="margin:0;">Суммы берутся только из опубликованных отчётов, где строки точно сопоставлены с этим релизом в AetherLab.</p></div>`;
     }
     function releaseHubTabContent(r,tab){
         if(tab==='tracks') return renderHubTracks(r);
-        if(tab==='moderation') return renderHubModeration(r);
         if(tab==='delivery') return renderHubDelivery(r);
-        if(tab==='history') return renderHubHistory(r);
+        if(tab==='finance') return renderHubFinance(r);
         return renderHubOverview(r);
     }
     window.openReleaseHub=function(id,tab){
@@ -226,8 +301,10 @@
         const r=visibleReleaseById(id);
         if(!r){root.innerHTML='<div class="rm-empty">Релиз не найден.</div>';return;}
         window.currentReleaseHubId=String(r.id);
-        const tabs=[['overview','Обзор'],['tracks','Треки'],['moderation','Модерация'],['delivery','Доставка'],['history','История']];
-        root.innerHTML=`<div class="rm-shell"><div class="rm-hero"><img class="rm-cover" src="${attr(r.coverFile||'')}" alt="Обложка"><div class="rm-hero-main"><button class="rm-back" type="button" onclick="${currentUser&&currentUser.role==='Administrator'?"nav('adminReleases')":"navCatalog('all')"}">← Назад</button><div class="rm-title">${esc(r.title||'Без названия')}</div><div class="rm-artist">${esc(r.artist||'—')}</div></div><div class="rm-hero-meta"><span class="rm-chip ${statusClass(r)}"><span class="rm-status-dot"></span>${esc(releaseStatusLabel(r))}</span><span class="rm-chip">${esc(formatDateOnly(r.releaseDate))}</span><span class="rm-chip">UPC: ${esc(r.upc||'—')}</span></div></div><div class="rm-tabs">${tabs.map(([key,label])=>`<button class="rm-tab ${window.currentReleaseHubTab===key?'active':''}" onclick="setReleaseHubTab('${key}')">${label}</button>`).join('')}</div>${releaseHubTabContent(r,window.currentReleaseHubTab)}</div>`;
+        const tabs=[['overview','Обзор'],['tracks','Треки'],['delivery','Доставка'],['finance','Финансы']];
+        const coverIssue=moderationIssue(r,'cover'), titleIssue=moderationIssue(r,'title'), artistIssue=moderationIssue(r,'artist');
+        const cover=r.coverFile?`<div class="rm-cover-wrap"><img class="rm-cover" src="${attr(r.coverFile)}" alt="Обложка">${coverIssue?`<div class="rm-hero-issue-badge ${coverIssue.state}" title="${attr(coverIssue.comment)}">!</div>`:''}</div>`:`<div class="rm-cover rm-cover-empty">♫</div>`;
+        root.innerHTML=`<div class="rm-shell"><div class="rm-hero">${cover}<div class="rm-hero-main"><button class="rm-back" type="button" onclick="${currentUser&&currentUser.role==='Administrator'?"nav('adminReleases')":"navCatalog('all')"}">← Назад</button><div class="rm-title">${esc(r.title||'Без названия')}</div>${titleIssue?`<div class="rm-hero-field-issue ${titleIssue.state}">${esc(titleIssue.comment)}</div>`:''}<div class="rm-artist">${esc(r.artist||'—')}</div>${artistIssue?`<div class="rm-hero-field-issue ${artistIssue.state}">${esc(artistIssue.comment)}</div>`:''}</div><div class="rm-hero-meta"><span class="rm-chip ${statusClass(r)}"><span class="rm-status-dot"></span>${esc(releaseStatusLabel(r))}</span><span class="rm-chip">${esc(formatDateOnly(r.releaseDate))}</span><span class="rm-chip">UPC: ${esc(r.upc||'—')}</span></div></div><div class="rm-tabs">${tabs.map(([key,label])=>`<button class="rm-tab ${window.currentReleaseHubTab===key?'active':''}" onclick="setReleaseHubTab('${key}')">${label}</button>`).join('')}</div>${releaseHubTabContent(r,window.currentReleaseHubTab)}</div>`;
         if(typeof aetherUpgradeAllAudioPlayers==='function') setTimeout(()=>aetherUpgradeAllAudioPlayers(root),0);
     };
 
@@ -241,7 +318,7 @@
         if(sub) sub.textContent=`${r.artist||'—'} — ${r.title||'Без названия'}`;
         body.innerHTML=`<div class="rm-edit-list">${MODERATION_CHECKS.map(([key,label])=>{
             const item=checks[key]||{}; const state=item.state||'pending';
-            return `<div class="rm-edit-row" data-mod-key="${key}"><div class="rm-check-name">${esc(label)}</div><select class="rm-edit-state"><option value="pending" ${state==='pending'?'selected':''}>Не проверено</option><option value="ok" ${state==='ok'?'selected':''}>Принято</option><option value="warn" ${state==='warn'?'selected':''}>Требует внимания</option><option value="error" ${state==='error'?'selected':''}>Исправить</option></select><textarea class="rm-edit-comment" rows="2" placeholder="Комментарий по этому пункту...">${esc(item.comment||'')}</textarea></div>`;
+            return `<div class="rm-edit-row" data-mod-key="${key}"><div class="rm-check-name">${esc(label)}</div><select class="rm-edit-state"><option value="pending" ${state==='pending'?'selected':''}>Не проверено</option><option value="ok" ${state==='ok'?'selected':''}>Принято</option><option value="warn" ${state==='warn'?'selected':''}>Требует внимания</option><option value="error" ${state==='error'?'selected':''}>Исправить</option></select><textarea class="rm-edit-comment" rows="2" placeholder="Например: Замените WAV / Исправьте имя исполнителя">${esc(item.comment||'')}</textarea></div>`;
         }).join('')}</div><div class="form-group" style="margin-top:14px;"><label>Общий комментарий модератора</label><textarea id="releaseModerationSummary" rows="3" placeholder="Необязательно">${esc((r.moderation&&r.moderation.summary)||'')}</textarea></div>`;
         box.classList.remove('hidden');
         if(typeof refreshCustomSelectsSoon==='function') refreshCustomSelectsSoon();
@@ -260,11 +337,11 @@
         });
         const summary=(document.getElementById('releaseModerationSummary')?.value||'').trim();
         r.moderation={checks,summary,updatedAt:now(),updatedBy:currentActor()};
-        let histTitle='Проверка модерации сохранена'; let histDetail='Модератор обновил чек-лист релиза.';
+        let histTitle='Проверка модерации сохранена'; let histDetail='Модератор обновил проверку полей релиза.';
         if(errors.length){
             r.status='Отклонён'; r.rejectReason=errors.join(' • '); histTitle='Запрошены исправления'; histDetail=errors.join(' • ');
         } else if(warnings.length){ histDetail='Есть замечания: '+warnings.join(' • '); }
-        else if(Object.values(checks).length && Object.values(checks).every(x=>x.state==='ok')){ histDetail='Все пункты чек-листа отмечены как принятые.'; }
+        else if(Object.values(checks).length && Object.values(checks).every(x=>x.state==='ok')){ histDetail='Все пункты проверки отмечены как принятые.'; }
         addHistoryToObject(r,histTitle,histDetail,'moderation');
         window.aetherRecordActivity('moderation',histTitle,histDetail,r);
         db.ref('releases/'+r.id).set(r).then(()=>{ closeReleaseModerationEditor(); renderReleaseHub(); if(typeof renderAdminReleases==='function') renderAdminReleases(false); UI.alert('Сохранено','Результат проверки сохранён.'); }).catch(err=>UI.alert('Ошибка',esc(err.message||err)));
@@ -290,7 +367,9 @@
         return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),12,0,0,0);
     }
     function calendarVisibleReleases(){
-        try{return getReleasesVisibleToCurrentUser().filter(r=>r&&!r.isDeleted&&releaseDateObject(r.releaseDate));}catch(e){return (appState.releases||[]).filter(r=>r&&!r.isDeleted&&releaseDateObject(r.releaseDate));}
+        const all=(appState.releases||[]).filter(r=>r&&!r.isDeleted&&releaseDateObject(r.releaseDate));
+        if(currentUser&&currentUser.role==='Administrator') return all;
+        try{return getReleasesVisibleToCurrentUser().filter(r=>r&&!r.isDeleted&&releaseDateObject(r.releaseDate));}catch(e){return all.filter(r=>!currentUser||String(r.userEmail||'').toLowerCase()===String(currentUser.email||'').toLowerCase());}
     }
     function calendarStatusClass(r){return r.status==='Одобрен'?'approved':r.status==='Модерация'?'moderation':r.status==='Отклонён'?'fix':'draft';}
     function monthName(d){return d.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});}
@@ -303,12 +382,14 @@
     }
     function calendarMonthHTML(rels,monthDate){
         const y=monthDate.getFullYear(),m=monthDate.getMonth(); const first=new Date(y,m,1); const firstMonday=(first.getDay()+6)%7; const start=new Date(y,m,1-firstMonday);
-        let days='';
+        let days=''; const today=new Date();
         for(let i=0;i<42;i++){
-            const d=new Date(start); d.setDate(start.getDate()+i); const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const events=rels.filter(r=>r.releaseDate===iso); const today=new Date(); const isToday=d.toDateString()===today.toDateString();
-            days+=`<div class="calendar-day ${d.getMonth()!==m?'other':''} ${isToday?'today':''}"><div class="calendar-day-num">${d.getDate()}</div>${events.slice(0,3).map(r=>`<button class="calendar-event" onclick="openReleaseHub('${attr(r.id)}')"><img src="${attr(r.coverFile||'')}" alt=""><span><span class="calendar-event-title"><span class="calendar-event-dot ${calendarStatusClass(r)}"></span>${esc(r.title||'Без названия')}</span><span class="calendar-event-artist">${esc(r.artist||'—')}</span></span></button>`).join('')}${events.length>3?`<div class="calendar-more">+ ещё ${events.length-3}</div>`:''}</div>`;
+            const d=new Date(start); d.setDate(start.getDate()+i); const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const dayRels=rels.filter(r=>r.releaseDate===iso).slice(0,3); const more=rels.filter(r=>r.releaseDate===iso).length-dayRels.length;
+            const cls=[d.getMonth()!==m?'other':'',d.toDateString()===today.toDateString()?'today':''].filter(Boolean).join(' ');
+            days+=`<div class="calendar-day ${cls}"><div class="calendar-day-num">${d.getDate()}</div>${dayRels.map(r=>`<button class="calendar-event" type="button" onclick="openReleaseHub('${attr(r.id)}')"><img src="${attr(r.coverFile||'')}" alt=""><span><span class="calendar-event-title"><i class="calendar-event-dot ${calendarStatusClass(r)}"></i>${esc(r.title||'Без названия')}</span><span class="calendar-event-artist">${esc(r.artist||'—')}</span></span></button>`).join('')}${more>0?`<div class="calendar-more">+ ещё ${more}</div>`:''}</div>`;
         }
-        return `<div class="calendar-mobile-note">На телефоне календарь автоматически показан удобным списком.</div><div class="calendar-weekdays">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>`<div>${x}</div>`).join('')}</div><div class="calendar-grid">${days}</div><div class="calendar-mobile-list">${calendarListHTML(rels,monthDate)}</div>`;
+        return `<div class="calendar-mobile-note">На телефоне календарь показан списком, чтобы обложки и названия не были слишком мелкими.</div><div class="calendar-weekdays"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div><div class="calendar-grid">${days}</div><div class="calendar-mobile-list">${calendarListHTML(rels,monthDate)}</div>`;
     }
     window.renderReleaseCalendar=function(){
         const root=document.getElementById('releaseCalendarRoot'); if(!root)return;
@@ -346,10 +427,66 @@
         const el=document.getElementById(targetId);if(!el)return;const error=items.some(x=>x.state==='error'),warn=items.some(x=>x.state==='warn');const status=error?'error':warn?'warn':'ok';const label=error?'Есть ошибки':warn?'Есть предупреждения':'Проверено';
         el.classList.remove('hidden');el.innerHTML=`<div class="tech-check-head"><div class="tech-check-title">${esc(title)}</div><span class="tech-check-status ${status}">${label}</span></div><div class="tech-check-grid">${items.map(x=>`<div class="tech-check-item ${x.state}"><span class="mark">${x.state==='ok'?'✓':x.state==='warn'?'!':'×'}</span><span>${esc(x.text)}</span></div>`).join('')}</div>`;
     }
-    window.aetherRenderArtworkTechnicalCheck=function(file,width,height){
-        if(!file)return;const isImage=/^image\//.test(file.type||'')||/\.(png|jpe?g)$/i.test(file.name||'');const square=width===height;const exact=width===3000&&height===3000;const sizeOk=file.size<=10*1024*1024;
-        const items=[{state:isImage?'ok':'error',text:`Формат: ${(file.type||file.name.split('.').pop()||'—').toUpperCase()}`},{state:exact?'ok':'error',text:`Размер: ${width} × ${height}px (требуется 3000 × 3000)`},{state:square?'ok':'error',text:'Соотношение сторон 1:1'},{state:sizeOk?'ok':'error',text:`Размер файла: ${bytes(file.size)} / 10 MB`}];
-        renderTechCheck('coverTechnicalCheck','Проверка обложки',items);return items;
+    async function detectArtworkColor(file){
+        try{
+            const buffer=await file.slice(0,Math.min(file.size,1048576)).arrayBuffer(); const u8=new Uint8Array(buffer);
+            if(u8.length>=26 && u8[0]===0x89&&u8[1]===0x50&&u8[2]===0x4E&&u8[3]===0x47){
+                const ct=u8[25];
+                if(ct===2) return {mode:'RGB',ok:true};
+                if(ct===6) return {mode:'RGBA',ok:true};
+                if(ct===3) return {mode:'Indexed RGB',ok:true};
+                if(ct===0||ct===4) return {mode:'Grayscale',ok:false};
+                return {mode:'Неизвестно',ok:null};
+            }
+            if(u8.length>=4 && u8[0]===0xFF&&u8[1]===0xD8){
+                let off=2;
+                while(off+4<u8.length){
+                    if(u8[off]!==0xFF){off++;continue;}
+                    while(off<u8.length&&u8[off]===0xFF)off++;
+                    const marker=u8[off++];
+                    if(marker===0xD9||marker===0xDA)break;
+                    if(off+1>=u8.length)break;
+                    const len=(u8[off]<<8)|u8[off+1];
+                    if(len<2||off+len>u8.length)break;
+                    if([0xC0,0xC1,0xC2,0xC3,0xC5,0xC6,0xC7,0xC9,0xCA,0xCB,0xCD,0xCE,0xCF].includes(marker)){
+                        const comps=u8[off+7];
+                        if(comps===3)return {mode:'RGB',ok:true};
+                        if(comps===4)return {mode:'CMYK',ok:false};
+                        if(comps===1)return {mode:'Grayscale',ok:false};
+                        return {mode:`${comps||'—'} channels`,ok:null};
+                    }
+                    off+=len;
+                }
+                return {mode:'RGB / JPEG',ok:true};
+            }
+            return {mode:'Неизвестно',ok:null};
+        }catch(e){return {mode:'Не удалось определить',ok:null};}
+    }
+    function artworkItems(q){
+        return [
+            {state:q.formatOk?'ok':'error',text:`Формат: ${q.formatLabel}`},
+            {state:q.exact?'ok':'error',text:`Размер: ${q.width} × ${q.height}px (требуется 3000 × 3000)`},
+            {state:q.square?'ok':'error',text:'Соотношение сторон 1:1'},
+            {state:q.colorOk===true?'ok':q.colorOk===false?'error':'warn',text:`Цветовой режим: ${q.colorMode}${q.colorOk===false?' (нужен RGB)':''}`},
+            {state:q.sizeOk?'ok':'error',text:`Размер файла: ${bytes(q.fileSize)} / 10 MB`}
+        ];
+    }
+    window.aetherInspectArtworkFile=async function(file,width,height){
+        if(!file)return null;
+        const ext=(String(file.name||'').split('.').pop()||'').toLowerCase();
+        const formatOk=['jpg','jpeg','png'].includes(ext)||/image\/(jpeg|png)/i.test(file.type||'');
+        const color=await detectArtworkColor(file);
+        const q={width:Number(width)||0,height:Number(height)||0,fileSize:Number(file.size)||0,formatOk,formatLabel:(file.type||ext||'—').replace('image/','').toUpperCase(),square:Number(width)===Number(height),exact:Number(width)===3000&&Number(height)===3000,colorMode:color.mode,colorOk:color.ok,sizeOk:Number(file.size)<=10*1024*1024,checkedAt:now()};
+        q.valid=q.formatOk&&q.square&&q.exact&&q.sizeOk&&q.colorOk!==false;
+        return q;
+    };
+    window.aetherRenderArtworkTechnicalData=function(q){if(!q)return;renderTechCheck('coverTechnicalCheck','Artwork Checker',artworkItems(q));};
+    window.aetherRenderArtworkTechnicalCheck=async function(file,width,height){
+        if(!file)return null;
+        renderTechCheck('coverTechnicalCheck','Artwork Checker',[{state:'warn',text:'Проверяем размер, пропорции и цветовой режим…'}]);
+        const q=await window.aetherInspectArtworkFile(file,width,height); window.aetherRenderArtworkTechnicalData(q);
+        try{if(typeof draftRelease==='object'&&draftRelease)draftRelease.coverTechnical=q;}catch(e){}
+        return q;
     };
     function parseWav(buffer,fileSize){
         const dv=new DataView(buffer); if(dv.byteLength<12||String.fromCharCode(...new Uint8Array(buffer,0,4))!=='RIFF'||String.fromCharCode(...new Uint8Array(buffer,8,4))!=='WAVE') throw new Error('Некорректный WAV');
@@ -363,16 +500,33 @@
         if(!q||!q.valid)return[{state:'error',text:'WAV-файл не удалось корректно прочитать'}];
         return [
             {state:'ok',text:'Формат WAV'},
-            {state:q.channels===2?'ok':'warn',text:q.channels===2?'Stereo':'Каналы: '+(q.channels||'—')+' (рекомендуется Stereo)'},
-            {state:q.sampleRate>=44100?'ok':'warn',text:`Sample rate: ${q.sampleRate||'—'} Hz`},
-            {state:q.bitDepth>=24?'ok':'warn',text:`Bit depth: ${q.bitDepth||'—'}-bit${q.bitDepth<24?' (24-bit рекомендуется)':''}`},
+            {state:q.sampleRate>=44100?'ok':'error',text:`Sample rate: ${q.sampleRate?Math.round(q.sampleRate/100)/10+' kHz':'—'}${q.sampleRate<44100?' (минимум 44.1 kHz)':''}`},
+            {state:q.channels===2?'ok':'error',text:q.channels===2?'Stereo':`Каналы: ${q.channels||'—'} (нужен Stereo)`},
+            {state:q.bitDepth>=16?'ok':'error',text:`Bit depth: ${q.bitDepth||'—'}-bit${q.bitDepth<16?' (минимум 16-bit)':''}`},
             {state:q.fileSize<=50*1024*1024?'ok':'error',text:`Размер файла: ${bytes(q.fileSize)} / 50 MB`}
         ];
     };
-    window.aetherRenderTrackTechnicalCheck=function(track,targetId='trackTechnicalCheck'){const el=document.getElementById(targetId);if(!track||!track.audioTechnical){if(el){el.classList.add('hidden');el.innerHTML='';}return;}renderTechCheck(targetId,'Проверка аудио',window.aetherAudioTechnicalItems(track.audioTechnical));};
-    window.aetherTrackTechChipsHTML=function(track){const q=track&&track.audioTechnical;if(!q||!q.valid)return'';const sr=q.sampleRate?`${Math.round(q.sampleRate/100)/10} kHz`:'Sample rate —';const bit=q.bitDepth?`${q.bitDepth}-bit`:'Bit depth —';const ch=q.channels===2?'Stereo':q.channels===1?'Mono':(q.channels?`${q.channels} ch`:'Channels —');return `<div class="track-tech-inline"><span class="track-tech-chip ${q.sampleRate>=44100?'ok':'warn'}">${esc(sr)}</span><span class="track-tech-chip ${q.bitDepth>=24?'ok':'warn'}">${esc(bit)}</span><span class="track-tech-chip ${q.channels===2?'ok':'warn'}">${esc(ch)}</span></div>`;};
+    window.aetherRenderTrackTechnicalCheck=function(track,targetId='trackTechnicalCheck'){const el=document.getElementById(targetId);if(!track||!track.audioTechnical){if(el){el.classList.add('hidden');el.innerHTML='';}return;}renderTechCheck(targetId,'Audio Checker',window.aetherAudioTechnicalItems(track.audioTechnical));};
+    window.aetherTrackTechChipsHTML=function(track){const q=track&&track.audioTechnical;if(!q)return'';if(!q.valid)return'<div class="track-tech-inline"><span class="track-tech-chip error">WAV ×</span></div>';const sr=q.sampleRate?`${Math.round(q.sampleRate/100)/10} kHz`:'Sample rate —';const bit=q.bitDepth?`${q.bitDepth}-bit`:'Bit depth —';const ch=q.channels===2?'Stereo':q.channels===1?'Mono':(q.channels?`${q.channels} ch`:'Channels —');return `<div class="track-tech-inline"><span class="track-tech-chip ${q.sampleRate>=44100?'ok':'error'}">${esc(sr)}</span><span class="track-tech-chip ${q.bitDepth>=16?'ok':'error'}">${esc(bit)}</span><span class="track-tech-chip ${q.channels===2?'ok':'error'}">${esc(ch)}</span></div>`;};
+    window.aetherValidateDraftTechnicalChecks=async function(draft){
+        const errors=[]; if(!draft)return {ok:true,errors};
+        if(draft._coverFileObj){
+            let q=draft.coverTechnical;
+            if(!q||!q.checkedAt){
+                const img=document.getElementById('coverPreview'); const w=img&&img.naturalWidth||3000,h=img&&img.naturalHeight||3000;
+                q=await window.aetherInspectArtworkFile(draft._coverFileObj,w,h); draft.coverTechnical=q; window.aetherRenderArtworkTechnicalData(q);
+            }
+            artworkItems(q).filter(x=>x.state==='error').forEach(x=>errors.push('Обложка: '+x.text));
+        } else if(draft.coverTechnical){ artworkItems(draft.coverTechnical).filter(x=>x.state==='error').forEach(x=>errors.push('Обложка: '+x.text)); }
+        for(let i=0;i<(draft.tracks||[]).length;i++){
+            const t=draft.tracks[i]; let q=t.audioTechnical;
+            if(!q&&t._audioFileObj){q=await window.aetherInspectWavFile(t._audioFileObj);t.audioTechnical=q;}
+            if(!q)continue;
+            window.aetherAudioTechnicalItems(q).filter(x=>x.state==='error').forEach(x=>errors.push(`Трек №${i+1}: ${x.text}`));
+        }
+        return {ok:errors.length===0,errors};
+    };
 
-    // Hide legacy deleted-release UI at runtime as a second safety net.
     function removeLegacyDeleteUi(){
         document.getElementById('btn-adminDeleted')?.remove();
         const deleted=document.getElementById('sec-adminDeleted');if(deleted)deleted.classList.add('hidden');

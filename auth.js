@@ -309,8 +309,7 @@
                             createdByAdminLogin: '',
                             passwordHistory: [{pass: pass, date: new Date().toLocaleString()}],
                             isBanned: false,
-                            notifications: [],
-                            unreadArtistChats: {},
+                                    unreadArtistChats: {},
                             readContent: {},
                             isDeletedCabinet: false
                         };
@@ -356,7 +355,6 @@
                     isBanned: false,
                     banReason: '',
                     devices: [getDeviceInfo()],
-                    notifications: [],
                     unreadAdminMsg: false,
                     unreadArtistChats: {},
                     readContent: {},
@@ -366,6 +364,7 @@
                 upsertLocalUserFast(newUser);
                 saveUserDB(newUser);
                 currentUser = newUser;
+                try{ if(typeof aetherRecordActivity==='function') aetherRecordActivity('user','Создан новый пользователь',`Создан кабинет ${newUser.login || newUser.email}.`,null,{userEmail:newUser.email||'',targetUserId:newUser.id||''}); }catch(e){}
                 saveAetherLabSession(currentUser);
                 startApp();
             }
@@ -402,7 +401,7 @@
         collapseSidebarMenus();
         if(typeof window.openAetherLabCurrentPath === 'function') window.openAetherLabCurrentPath();
         else nav('overview', true);
-        checkNotifications();
+        refreshUnreadIndicators();
         setTimeout(maybeShowFirstLoginPasswordChange, 350);
     }
     
@@ -690,11 +689,7 @@
         UI.closePrompt();
         UI.alert('Успешно', 'Аватарка обновлена.');
     }
-    function pushNotification(userEmail, text) {
-        // Global notification center was intentionally removed. Section badges/ticket dots remain.
-        return false;
-    }
-    function checkNotifications() {
+    function refreshUnreadIndicators() {
         if (!currentUser) return;
         updateSidebarCounts();
         toggleDot('chatUnreadDot', currentUser.role !== 'Administrator' && !!currentUser.unreadAdminMsg);
@@ -702,7 +697,6 @@
         toggleDot('newsUnreadDot', hasUnreadContent('news'));
         toggleDot('guideUnreadDot', hasUnreadContent('guide'));
     }
-    function showNotifications() { return false; }
     function setNavMenuState(menuId, open) {
         const menu = document.getElementById('nav-menu-' + menuId);
         const trigger = document.querySelector('[data-nav-toggle="' + menuId + '"]');
@@ -788,7 +782,7 @@
         const titles = { 'overview': 'Обзор', 'releaseCalendar':'Календарь релизов', 'releaseHub':'Релиз', 'activityLog':'Журнал действий', 'newRelease': 'Новый релиз', 'news': 'Новости', 'guide': 'Инструкция', 'adminContent': 'Новости и инструкция', 'adminUsers': 'Управление кабинетами', 'questionnaires': 'Анкеты', 'adminReleases': 'Все релизы', 'userChat': 'Поддержка', 'adminChats': 'Поддержка', 'karaoke': 'Караоке текст', 'promoLinks': 'Промо-ссылки' };
         document.getElementById('pageTitle').innerText = titles[section] || 'Раздел';
         refreshUI();
-        checkNotifications();
+        refreshUnreadIndicators();
         if(window.innerWidth <= 768) {
             const sidebar = document.querySelector('.sidebar');
             if(sidebar) sidebar.classList.remove('open');

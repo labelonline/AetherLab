@@ -6,7 +6,7 @@
     let activeCatalogFilter = 'all'; 
     let isDraftDirty = false; 
     let currentDraftId = null; 
-    let draftRelease = { coverFile: null, tracks: [], aiCoverUsed: false }; 
+    let draftRelease = { coverFile: null, coverTechnical: null, tracks: [], aiCoverUsed: false }; 
     let editTrackId = null; 
     let activeAdminChatUser = null; 
     let isDBLoaded = false;

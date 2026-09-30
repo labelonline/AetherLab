@@ -46,13 +46,11 @@
                 if(targetU) r.userId = targetU.id;
                 
                 db.ref('releases/' + r.id).set(r);
-                pushNotification(r.userEmail, `✅ Ваш релиз "${r.title}" был одобрен модератором.`); 
-                renderAdminReleases(false); 
+renderAdminReleases(false); 
             });
         } else {
             db.ref('releases/' + r.id).set(r);
-            pushNotification(r.userEmail, `✅ Ваш релиз "${r.title}" был одобрен модератором.`); 
-            renderAdminReleases(false); 
+renderAdminReleases(false); 
         }
     }
 

@@ -22,7 +22,7 @@
                 document.getElementById('appView').classList.add('hidden'); document.getElementById('mobHeader').classList.add('hidden'); 
                 return; 
             }
-            refreshUI(); checkNotifications();
+            refreshUI(); refreshUnreadIndicators();
         }
     }, (err) => {
         console.error(err);
@@ -43,7 +43,7 @@
     db.ref('releases').on('value', (snapshot) => {
         const data = snapshot.val() || {};
         appState.releases = mergePendingReleases(Object.values(data));
-        if(currentUser) { refreshUI(); checkNotifications(); }
+        if(currentUser) { refreshUI(); refreshUnreadIndicators(); }
     }, (err) => console.error(err));
 
     db.ref('chats').on('value', (snapshot) => {
@@ -53,7 +53,7 @@
             if(currentUser.role === 'Administrator' && currentSection === 'adminChats' && activeAdminChatUser) clearArtistChatUnread(activeAdminChatUser, true);
             if(currentUser.role !== 'Administrator' && currentSection === 'userChat' && currentUser.unreadAdminMsg) { currentUser.unreadAdminMsg = false; saveUserDB(currentUser); }
             if(currentSection === 'userChat' || currentSection === 'adminChats') refreshUI();
-            checkNotifications();
+            refreshUnreadIndicators();
         }
     }, (err) => console.error(err));
 
@@ -67,7 +67,7 @@
         if(currentUser) {
             if(['news','guide'].includes(currentSection)) markContentRead(currentSection, true);
             if(['news','guide','adminContent'].includes(currentSection)) refreshUI();
-            checkNotifications();
+            refreshUnreadIndicators();
         }
     }, (err) => console.error(err));
 

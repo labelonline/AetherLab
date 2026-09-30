@@ -15,7 +15,7 @@
             noNext:'Пока нет будущих принятых релизов. После одобрения релиза здесь появится ближайшая дата выхода.',
             drafts:'Черновики',draftsMeta:'Незавершённые релизы',rejected:'Исправления',rejectedMeta:'Релизы отклонены модератором',waiting:'Модерация',waitingMeta:'Релизы ожидают проверки',allGood:'Сейчас ничего срочного нет.',
             noActivity:'Пока нет релизов для отображения активности.',noNews:'Пока нет опубликованных новостей.',today:'Сегодня',tomorrow:'Завтра',days:'дн.',hours:'ч.',minutes:'мин.',releasedToday:'Дата релиза — сегодня',
-            statusDraft:'Черновик',statusMod:'На модерации',statusOk:'Принят',statusErr:'Требует исправления',releaseDate:'Дата выхода',timezone:'Часовой пояс'
+            statusDraft:'Черновик',statusMod:'На модерации',statusOk:'Принят',statusErr:'Требует исправления',releaseDate:'Дата выхода',timezone:'Часовой пояс',upcomingTitle:'Календарь релизов',upcomingOne:'релиз в ближайшие 30 дней',upcomingFew:'релиза в ближайшие 30 дней',upcomingMany:'релизов в ближайшие 30 дней'
         },
         en:{
             morning:'Good morning',day:'Good afternoon',evening:'Good evening',night:'Good night',
@@ -28,7 +28,7 @@
             noNext:'There are no upcoming approved releases yet. The nearest release date will appear here after approval.',
             drafts:'Drafts',draftsMeta:'Unfinished releases',rejected:'Changes required',rejectedMeta:'Releases rejected by moderation',waiting:'Moderation',waitingMeta:'Releases waiting for review',allGood:'Nothing urgent right now.',
             noActivity:'There are no releases to show activity for yet.',noNews:'There are no published news posts yet.',today:'Today',tomorrow:'Tomorrow',days:'d',hours:'h',minutes:'m',releasedToday:'Release date is today',
-            statusDraft:'Draft',statusMod:'In moderation',statusOk:'Approved',statusErr:'Needs changes',releaseDate:'Release date',timezone:'Time zone'
+            statusDraft:'Draft',statusMod:'In moderation',statusOk:'Approved',statusErr:'Needs changes',releaseDate:'Release date',timezone:'Time zone',upcomingTitle:'Release calendar',upcomingOne:'release in the next 30 days',upcomingFew:'releases in the next 30 days',upcomingMany:'releases in the next 30 days'
         },
         uk:{
             morning:'Доброго ранку',day:'Добрий день',evening:'Добрий вечір',night:'Доброї ночі',
@@ -41,7 +41,7 @@
             noNext:'Поки немає майбутніх прийнятих релізів. Після схвалення тут з’явиться найближча дата виходу.',
             drafts:'Чернетки',draftsMeta:'Незавершені релізи',rejected:'Виправлення',rejectedMeta:'Релізи відхилені модератором',waiting:'Модерація',waitingMeta:'Релізи очікують перевірки',allGood:'Зараз нічого термінового немає.',
             noActivity:'Поки немає релізів для відображення активності.',noNews:'Поки немає опублікованих новин.',today:'Сьогодні',tomorrow:'Завтра',days:'дн.',hours:'год.',minutes:'хв.',releasedToday:'Дата релізу — сьогодні',
-            statusDraft:'Чернетка',statusMod:'На модерації',statusOk:'Прийнято',statusErr:'Потребує виправлень',releaseDate:'Дата виходу',timezone:'Часовий пояс'
+            statusDraft:'Чернетка',statusMod:'На модерації',statusOk:'Прийнято',statusErr:'Потребує виправлень',releaseDate:'Дата виходу',timezone:'Часовий пояс',upcomingTitle:'Календар релізів',upcomingOne:'реліз у найближчі 30 днів',upcomingFew:'релізи у найближчі 30 днів',upcomingMany:'релізів у найближчі 30 днів'
         }
     };
 
@@ -117,6 +117,21 @@
         setText('overviewAttentionHeading',t('attention'));setText('overviewAttentionCaption',t('attentionCaption'));
         setText('overviewActivityHeading',t('activity'));setText('overviewActivityCaption',t('activityCaption'));
         setText('overviewNewsHeading',t('news'));setText('overviewNewsCaption',t('newsCaption'));setText('overviewAllNews',t('allNews'));
+        setText('overviewUpcomingTitle',t('upcomingTitle'));
+    }
+    function upcomingWord(n){
+        if(lang()==='en') return n===1?t('upcomingOne'):t('upcomingMany');
+        const n10=n%10,n100=n%100;
+        if(n10===1&&n100!==11) return t('upcomingOne');
+        if(n10>=2&&n10<=4&&(n100<12||n100>14)) return t('upcomingFew');
+        return t('upcomingMany');
+    }
+    function renderUpcoming30(list){
+        const el=document.getElementById('overviewUpcoming30Count'); if(!el)return;
+        const source=currentUser&&currentUser.role==='Administrator'?(appState.releases||[]).filter(r=>r&&!r.isDeleted):list;
+        const today=startOfToday(), end=new Date(today.getTime()+30*86400000);
+        const count=source.map(r=>parseReleaseDate(r.releaseDate)).filter(d=>d&&d.getTime()>=today.getTime()&&d.getTime()<=end.getTime()).length;
+        el.textContent=`${count} ${upcomingWord(count)}`;
     }
     function renderStats(list){
         const all=list.length, mod=list.filter(r=>r.status==='Модерация').length, ok=list.filter(r=>r.status==='Одобрен').length, fix=list.filter(r=>r.status==='Отклонён').length;
@@ -169,7 +184,7 @@
 
     window.renderOverview=function(){
         if(!currentUser)return;
-        renderCopy(); const list=visible(); renderStats(list); renderNext(list); renderAttention(list); renderActivity(list); renderNews(); updateClock(); ensureTimer();
+        renderCopy(); const list=visible(); renderStats(list); renderUpcoming30(list); renderNext(list); renderAttention(list); renderActivity(list); renderNews(); updateClock(); ensureTimer();
         try{ if(typeof window.renderOverviewFinancePreview==='function') window.renderOverviewFinancePreview(); }catch(e){console.warn('Finance overview preview:',e);}
     };
     window.AetherOverview={render:window.renderOverview,refreshClock:updateClock};

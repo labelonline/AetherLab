@@ -28,6 +28,7 @@
                 status: preserveExisting ? (existingRelease.status || 'Черновик') : 'Черновик',
                 date: preserveExisting ? (existingRelease.date || new Date().toLocaleDateString()) : new Date().toLocaleDateString(),
                 coverFile: draftRelease.coverFile, 
+                coverTechnical: draftRelease.coverTechnical || (existingRelease && existingRelease.coverTechnical) || null,
                 aiCoverUsed: !!((document.getElementById('r_cover_ai') && document.getElementById('r_cover_ai').checked) || draftRelease.aiCoverUsed),
                 coverCloudinary: draftRelease.coverCloudinary || (existingRelease && existingRelease.coverCloudinary) || null,
                 tracks: draftRelease.tracks, 
@@ -60,8 +61,10 @@
     function startNewRelease() {
         const rejectBox = document.getElementById('editRejectReasonBox');
         if(rejectBox) { rejectBox.classList.add('hidden'); rejectBox.innerHTML = ''; }
-        draftRelease = { coverFile: null, tracks: [], aiCoverUsed: false }; 
+        draftRelease = { coverFile: null, coverTechnical: null, tracks: [], aiCoverUsed: false }; 
         setCoverAiUsed(false);
+        const coverTech = document.getElementById('coverTechnicalCheck'); if(coverTech){ coverTech.classList.add('hidden'); coverTech.innerHTML=''; }
+        if(typeof aetherClearModerationInlineIssues === 'function') aetherClearModerationInlineIssues();
         window.editingOriginalReleaseForComment = null;
         currentDraftId = null; 
         isDraftDirty = false; 
@@ -104,6 +107,7 @@
         document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
         
         draftRelease.coverFile = r.coverFile; 
+        draftRelease.coverTechnical = r.coverTechnical || null;
         draftRelease.aiCoverUsed = !!(r.aiCoverUsed || r.coverAiUsed || r.coverAIUsed);
         setCoverAiUsed(draftRelease.aiCoverUsed);
         draftRelease.tracks = r.tracks || [];
@@ -123,6 +127,10 @@
             document.getElementById('coverPreview').classList.add('hidden'); 
             document.getElementById('coverHint').classList.remove('hidden'); 
         }
+        const coverTech = document.getElementById('coverTechnicalCheck');
+        if(r.coverTechnical && typeof aetherRenderArtworkTechnicalData === 'function') aetherRenderArtworkTechnicalData(r.coverTechnical);
+        else if(coverTech) { coverTech.classList.add('hidden'); coverTech.innerHTML=''; }
+        if(typeof aetherApplyModerationIssuesToReleaseForm === 'function') setTimeout(() => aetherApplyModerationIssuesToReleaseForm(r), 0);
         
         document.getElementById('submitReleaseBtn').innerText = currentUser.role === 'Administrator' ? "Отправить на модерацию" : (r.status === 'Отклонён' ? "Отправить исправленный релиз на модерацию" : "Отправить релиз на модерацию");
         
@@ -154,7 +162,7 @@
         const localUrl = URL.createObjectURL(file);
         img.src = localUrl;
         img.onload = () => { 
-            if(typeof aetherRenderArtworkTechnicalCheck === 'function') aetherRenderArtworkTechnicalCheck(file, img.width, img.height);
+            if(typeof aetherRenderArtworkTechnicalCheck === 'function') aetherRenderArtworkTechnicalCheck(file, img.width, img.height).then(q => { if(q) draftRelease.coverTechnical = q; }).catch(()=>{});
             if(img.width === 3000 && img.height === 3000) { 
                 document.getElementById('r_cover_box').classList.remove('error-field');
                 draftRelease.coverFile = localUrl;
@@ -288,6 +296,8 @@
             return `<div class="track-list-item" style="${!t.isFilled ? 'border-color: var(--danger);' : ''}"><div style="flex:1;min-width:0;"><div style="font-weight: 500; font-size: 15px;">${idx+1}. ${title}</div><div class="text-sm" style="margin-top:4px;">${filename} &nbsp;|&nbsp; ${statusLabel}</div>${tech}${audio}</div><div style="display: flex; gap: 8px; flex-wrap:wrap;"><button class="btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openTrackEdit(${t.id})">Редактировать</button><button class="btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeDraftTrack(${t.id})">Удалить</button></div></div>`;
         }).join('');
         if(typeof aetherUpgradeAllAudioPlayers === 'function') aetherUpgradeAllAudioPlayers(list);
+        const editingRelease = appState.releases.find(r => String(r.id) === String(currentDraftId));
+        if(editingRelease && editingRelease.status === 'Отклонён' && typeof aetherApplyModerationIssuesToReleaseForm === 'function') setTimeout(() => aetherApplyModerationIssuesToReleaseForm(editingRelease), 0);
     }
     function removeDraftTrack(id) { draftRelease.tracks = draftRelease.tracks.filter(t => t.id !== id); isDraftDirty = true; renderDraftTracks(); }
     
@@ -329,6 +339,8 @@
         toggleLyricsByTrackType();
         refreshCustomSelectLabels();
         document.getElementById('sec-newRelease').classList.add('hidden'); document.getElementById('sec-trackEdit').classList.remove('hidden');
+        const editingRelease = appState.releases.find(r => String(r.id) === String(currentDraftId));
+        if(typeof aetherApplyTrackModerationIssues === 'function') aetherApplyTrackModerationIssues(editingRelease);
     }
     
     function saveTrackEdit() {
@@ -415,6 +427,10 @@
             if(!(draftRelease.tracks[i].lyrics || '').trim()) return UI.alert("Ошибка", `В треке №${i+1} не добавлен обычный статичный текст песни. Он обязателен для отправки релиза.`);
             if((draftRelease.tracks[i].ttmlText || draftRelease.tracks[i].ttmlFile || draftRelease.tracks[i].ttmlContent) && !(draftRelease.tracks[i].lyrics || '').trim()) return UI.alert("TTML без обычного текста", `В треке №${i+1} добавлен караоке-файл, но нет обычного текста песни. Добавьте обычный текст и попробуйте снова.`);
         }
+        if(typeof aetherValidateDraftTechnicalChecks === 'function') {
+            const techCheck = await aetherValidateDraftTechnicalChecks(draftRelease);
+            if(!techCheck.ok) return UI.alert('Artwork & Audio Checker', `Перед отправкой исправьте технические ошибки:<br><br>${techCheck.errors.map(x => '• ' + escapeHTML(x)).join('<br>')}`);
+        }
 
         window.__kiteSubmitFinalBusy = true;
         const submitBtn = document.getElementById('submitReleaseBtn');
@@ -448,6 +464,7 @@
                 status: (existingRelease && isAdmin) ? existingRelease.status : 'Модерация',
                 date: existingRelease ? existingRelease.date : new Date().toLocaleDateString(),
                 coverFile: draftRelease.coverFile,
+                coverTechnical: draftRelease.coverTechnical || (existingRelease && existingRelease.coverTechnical) || null,
                 aiCoverUsed: !!((document.getElementById('r_cover_ai') && document.getElementById('r_cover_ai').checked) || draftRelease.aiCoverUsed),
                 coverCloudinary: draftRelease.coverCloudinary || null,
                 tracks: draftRelease.tracks,
@@ -747,7 +764,7 @@ function renderCard(r, isAdmin) {
         if(r.status === 'Черновик') status = '<span class="badge badge-draft">Черновик</span>';
         else if(r.status === 'Модерация') status = '<span class="badge badge-mod">Модерация</span>';
         else if(r.status === 'Одобрен') status = '<span class="badge badge-ok">Одобрен</span>';
-        else if(r.status === 'Отклонён') status = `<span class="badge badge-err" style="cursor:pointer" onclick="UI.alert('Отклонено', '${escapeAttr(r.rejectReason || 'Причина не указана')}')">Отклонено ⓘ</span>`;
+        else if(r.status === 'Отклонён') status = `<span class="badge badge-err">Требует исправления</span>`;
         if(r.isDeleted) status = '<span class="badge badge-err">Удалён</span>';
         const coverSrc = r.coverFile || '';
         const tracks = Array.isArray(r.tracks) ? r.tracks : [];
@@ -767,7 +784,7 @@ function renderCard(r, isAdmin) {
             ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && (r.status === 'Модерация' || r.status === 'Отклонён') ? `<button class="release-icon-btn" onclick="openReleaseModerationEditor('${safeId}')">☑${releaseTooltip('Детальная модерация')}</button>` : ''}
             ${isAdmin && !r.isDeleted && currentUser.role === 'Administrator' && r.status === 'Модерация' ? `<button class="release-icon-btn glow" onclick="admApprove('${safeId}')">✓${releaseTooltip('Одобрить')}</button>` : ''}
         `;
-        return `<div class="release-card-pro">
+        return `<div class="release-card-pro release-card-hub-link" role="button" tabindex="0" onclick="if(!event.target.closest('button,a,audio,input,select,textarea,.release-track-panel')) openReleaseHub('${safeId}')" onkeydown="if((event.key==='Enter'||event.key===' ')&&!event.target.closest('button,a,input,select,textarea')){event.preventDefault();openReleaseHub('${safeId}')}">
             <img src="${coverSrc}" class="release-cover-pro" alt="Обложка">
             <div class="release-main-pro">
                 <div class="release-title-pro">${escapeHTML(r.title || 'Без названия')}</div>
