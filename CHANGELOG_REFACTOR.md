@@ -28,3 +28,10 @@
 - Добавлено аккуратное обрезание длинных описаний с многоточием.
 - Убран горизонтальный overflow Dashboard.
 - Добавлено сворачивание боковой панели до режима «только иконки» с сохранением состояния в браузере.
+
+## Mobile + Sidebar update
+- Added app-wide mobile responsive layer (`css/mobile.css`).
+- Added compact glass sidebar redesign (`css/sidebar-v3.css`).
+- Added mobile drawer controller with backdrop, Escape, tap-to-close and edge swipe (`js/mobile.js`).
+- Added mobile dynamic page title and safe-area support for iPhone-style displays.
+- Added mobile overrides for Overview, releases, track editor, catalog cards, dialogs, finance tables, support/chat, karaoke, media and admin views.

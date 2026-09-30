@@ -1,0 +1,54 @@
+/* AetherLab — extracted from the former monolithic index.html. */
+
+/* ===== AetherLab Support / FAQ / Tickets ===== */
+.support-shell{display:flex;flex-direction:column;gap:18px;}
+.support-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:4px;}
+.support-topbar h2{font-size:28px;line-height:1.1;font-weight:800;margin:0;}
+.support-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.support-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 10px;}
+.support-tab{padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);color:#d7deee;box-shadow:none;}
+.support-tab.active{background:linear-gradient(135deg,var(--accent),#5D83FF);color:#fff;border-color:rgba(255,255,255,.18);box-shadow:0 14px 30px rgba(68,110,240,.25);}
+.support-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.support-card{position:relative;min-height:82px;padding:18px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:.18s;box-shadow:0 14px 32px rgba(0,0,0,.22);}
+.support-card:hover{transform:translateY(-2px);background:rgba(68,110,240,.11);border-color:rgba(68,110,240,.45);box-shadow:0 18px 40px rgba(68,110,240,.12);}
+.support-card-title{font-weight:800;font-size:15px;line-height:1.35;color:#fff;margin-right:14px;}
+.support-card-preview{margin-top:8px;color:var(--text-muted);font-size:13px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.support-detail{padding:26px;border-radius:26px;background:rgba(255,255,255,.04);border:1px solid var(--border);box-shadow:var(--shadow);}
+.support-detail h2{font-size:32px;line-height:1.12;font-weight:900;letter-spacing:-.03em;margin:8px 0 18px;}
+.support-separator{height:1px;background:rgba(255,255,255,.10);margin:0 0 18px;}
+.support-answer{color:#d7deee;font-size:15px;font-weight:400;line-height:1.75;white-space:pre-wrap;}
+.support-empty{padding:28px;border-radius:22px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-muted);}
+.support-dot{position:absolute;right:14px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(68,110,240,.16),0 0 20px rgba(68,110,240,.95);}
+.ticket-card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.support-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#2a303d;border:1px solid rgba(255,255,255,.10);color:#fff;font-weight:800;flex:0 0 auto;}
+.support-avatar img{width:100%;height:100%;object-fit:cover;}
+.support-avatar.support-kite{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 0 18px rgba(34,197,94,.25);}
+.ticket-status{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);color:#d7deee;}
+.ticket-status.open{color:#92f4b3;background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.22);}
+.ticket-status.closed{color:#aab0c0;}
+.support-chat{display:flex;flex-direction:column;gap:14px;margin-top:16px;}
+.support-message{display:flex;gap:12px;align-items:flex-start;max-width:860px;}
+.support-message.admin{margin-left:auto;flex-direction:row-reverse;}
+.support-bubble{padding:14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.055);min-width:0;max-width:min(680px,100%);}
+.support-message.admin .support-bubble{background:rgba(34,197,94,.09);border-color:rgba(34,197,94,.20);}
+.support-msg-name{font-size:13px;font-weight:900;margin-bottom:6px;color:#fff;}
+.support-msg-text{font-size:14px;line-height:1.6;color:#d7deee;white-space:pre-wrap;word-break:break-word;}
+.support-msg-date{font-size:11px;color:var(--text-muted);margin-top:8px;}
+.support-warning{margin-top:18px;padding:14px 16px;border-radius:18px;background:rgba(68,110,240,.10);border:1px solid rgba(68,110,240,.22);color:#cfd8ff;font-size:13px;line-height:1.55;}
+.support-picker-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-height:60vh;overflow:auto;padding-right:4px;}
+.support-picker-card{padding:16px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);cursor:pointer;transition:.18s;}
+.support-picker-card:hover{background:rgba(68,110,240,.12);border-color:rgba(68,110,240,.42);transform:translateY(-1px);}
+.support-mini-toast{position:fixed;right:22px;top:22px;z-index:30000;padding:14px 18px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#5D83FF);color:#fff;font-weight:800;box-shadow:0 20px 45px rgba(68,110,240,.35);animation:fadeIn .2s ease;}
+@media(max-width:1100px){.support-grid,.support-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:700px){.support-grid,.support-picker-grid{grid-template-columns:1fr}.support-detail h2{font-size:25px}.support-topbar h2{font-size:24px}.support-actions{width:100%;justify-content:stretch}.support-actions button{flex:1}.support-message,.support-message.admin{max-width:100%;margin-left:0}.support-bubble{max-width:calc(100vw - 96px)}}
+
+
+
+
+/* ===== Support as sidebar subsection ===== */
+#supportNavGroup{margin-top:6px;}
+.support-work-area{animation:fadeIn .16s ease both;}
+.support-tabs{display:none!important;}
+@media(max-width:768px){#supportNavGroup .nav-group-items{padding-left:8px;}}
+
+

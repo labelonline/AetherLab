@@ -1,0 +1,34 @@
+/* AetherLab — extracted from the former monolithic index.html. */
+
+        /* ===== Questionnaire / label application ===== */
+        .questionnaire-dialog{
+            max-width:560px!important;
+            width:min(560px,94vw)!important;
+            border:1px solid var(--border)!important;
+            background:rgba(18,23,34,.96)!important;
+            border-radius:28px!important;
+            box-shadow:var(--shadow)!important;
+        }
+        .questionnaire-dialog textarea{min-height:150px;resize:vertical;line-height:1.55;}
+        .label-hint{color:rgba(170,176,192,.62);font-weight:500;margin-left:6px;font-size:12px;}
+        .questionnaire-check-btn{width:100%;margin-top:16px;border:1px solid rgba(255,255,255,.08)!important;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.035)!important;}
+        .questionnaire-check-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+        .questionnaire-card{padding:18px;border-radius:22px;border:1px solid var(--border);background:rgba(255,255,255,.04);box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;transition:.18s;}
+        .questionnaire-card:hover{transform:translateY(-1px);border-color:rgba(68,110,240,.36);background:rgba(255,255,255,.055);}
+        .questionnaire-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px;}
+        .questionnaire-name{font-size:17px;font-weight:800;color:#fff;line-height:1.25;}
+        .questionnaire-email{font-size:13px;color:var(--text-muted);margin-top:4px;}
+        .questionnaire-desc-preview{color:#d7deee;line-height:1.55;white-space:pre-wrap;margin-top:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+        .questionnaire-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:18px 0;}
+        .questionnaire-detail-box{padding:14px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.04);}
+        .questionnaire-detail-box span{display:block;color:var(--text-muted);font-size:12px;margin-bottom:6px;}
+        .questionnaire-detail-box strong{display:block;color:#fff;font-size:15px;line-height:1.35;word-break:break-word;}
+        .questionnaire-status{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid var(--border);white-space:nowrap;}
+        .questionnaire-status.pending{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.26);color:#ffd493;}
+        .questionnaire-status.accepted{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.26);color:#92f4b3;}
+        .questionnaire-status.rejected{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.26);color:#ffb1b1;}
+        @media(max-width:768px){.questionnaire-dialog{max-height:92dvh!important;overflow-y:auto!important}.questionnaire-card-head{flex-direction:column}.questionnaire-status{align-self:flex-start}}
+
+    
+
+

@@ -1,0 +1,37 @@
+<div class="view-section hidden" id="sec-trackEdit" style="max-width: 600px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;"><h2>Информация о треке</h2><span class="text-sm" id="te_filename" style="color: var(--accent); word-break: break-all;"></span></div>
+<div class="ai-usage-box" id="trackAiUsageBox" style="margin-bottom:18px;">
+<div class="ai-usage-title">Использование ИИ <span class="ai-usage-icon">✦</span></div>
+<div class="ai-usage-desc">Отметьте, если при создании трека использовался искусственный интеллект</div>
+<label class="ai-usage-check"><input class="t_ai_usage" onchange="handleTrackAiUsageChange(this); isDraftDirty=true;" type="checkbox" value="Трек полностью сгенерирован ИИ"/><span>Трек полностью сгенерирован ИИ</span></label>
+<label class="ai-usage-check"><input class="t_ai_usage" onchange="handleTrackAiUsageChange(this); isDraftDirty=true;" type="checkbox" value="ИИ использован частично, только для генерации музыки"/><span>ИИ использован частично, только для генерации музыки</span></label>
+<label class="ai-usage-check"><input class="t_ai_usage" onchange="handleTrackAiUsageChange(this); isDraftDirty=true;" type="checkbox" value="ИИ использован частично, только для генерации текста"/><span>ИИ использован частично, только для генерации текста</span></label>
+<label class="ai-usage-check"><input class="t_ai_usage" onchange="handleTrackAiUsageChange(this); isDraftDirty=true;" type="checkbox" value="ИИ использован частично, только для генерации и/или обработки вокала"/><span>ИИ использован частично, только для генерации и/или обработки вокала</span></label>
+<div class="form-group ai-proof-box hidden" data-ai-proof="subscription" id="aiProofSubscriptionBox">
+<label class="ai-proof-label">Ссылка на Google Drive / Яндекс Диск <span class="req-star">*</span><button aria-label="Подсказка" class="ai-proof-help" data-tip="Вставьте ссылку на Google Drive или Яндекс Диск, где будет загружено видео-доказательство о том, что в данной нейросети, где был изготовлен трек, есть подписка." type="button">?</button></label>
+<input id="t_ai_proof_subscription" oninput="isDraftDirty=true;" placeholder="https://drive.google.com/... или https://disk.yandex.ru/..." type="url"/>
+</div>
+<div class="form-group ai-proof-box hidden" data-ai-proof="text" id="aiProofTextBox">
+<label class="ai-proof-label">Ссылка на Google Drive / Яндекс Диск <span class="req-star">*</span><button aria-label="Подсказка" class="ai-proof-help" data-tip="Вставьте ссылку на Google Drive или Яндекс Диск, где будет загружено видео-доказательство о том, что ваш текст был сгенерирован/изменён через ИИ." type="button">?</button></label>
+<input id="t_ai_proof_text" oninput="isDraftDirty=true;" placeholder="https://drive.google.com/... или https://disk.yandex.ru/..." type="url"/>
+</div>
+</div>
+<div id="trackEditAudioPlayer" style="margin-bottom:18px;"></div>
+<div class="form-group"><label>Название трека <span class="req-star">*</span></label><input id="t_title" placeholder="Название трека" type="text"/></div>
+<div class="form-group"><label>Артисты трека <span class="req-star">*</span></label><div id="t_artist_container"></div></div>
+<div class="form-group"><label>Версия (необязательно)</label><input id="t_version" placeholder="Sped Up, Slowed, и т.д." type="text"/></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+<div class="form-group"><label>Автор слов <span class="req-star">*</span></label><div id="t_author_container"></div></div>
+<div class="form-group"><label>Композитор <span class="req-star">*</span></label><div id="t_comp_container"></div></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"><div class="form-group"><label>Тип трека <span class="req-star">*</span></label><select id="t_type" onchange="toggleLyricsByTrackType(); isDraftDirty=true;"><option value="Original">Original</option><option value="Live">Live</option><option value="Cover">Cover</option><option value="Remix">Remix</option><option value="Instrumental">Instrumental</option></select></div><div class="form-group"><label>Язык релиза <span class="req-star">*</span></label><select id="t_lang"><option value="">Выберите язык</option><option value="Без слов">Без слов</option><option value="Русский">Русский</option><option value="Английский">Английский</option><option value="Украинский">Украинский</option><option value="Белорусский">Белорусский</option><option value="Казахский">Казахский</option><option value="Польский">Польский</option><option value="Немецкий">Немецкий</option><option value="Французский">Французский</option><option value="Испанский">Испанский</option><option value="Итальянский">Итальянский</option><option value="Португальский">Португальский</option><option value="Турецкий">Турецкий</option><option value="Китайский">Китайский</option><option value="Японский">Японский</option><option value="Корейский">Корейский</option><option value="Арабский">Арабский</option><option value="Хинди">Хинди</option><option value="Иврит">Иврит</option><option value="Грузинский">Грузинский</option><option value="Армянский">Армянский</option><option value="Румынский">Румынский</option><option value="Молдавский">Молдавский</option><option value="Литовский">Литовский</option><option value="Латышский">Латышский</option><option value="Эстонский">Эстонский</option></select></div></div>
+<div class="form-group lyrics-ttml-field" id="lyricsFormGroup"><label>Текст песни <span class="req-star">*</span></label><textarea id="t_lyrics" placeholder="Обычный статичный текст песни обязателен..." rows="3"></textarea>
+<div class="ttml-upload-row">
+<label class="custom-file-btn" for="t_ttml_file">Добавить TTML</label>
+<input accept=".ttml" id="t_ttml_file" onchange="handleTrackTTMLUpload(this)" type="file"/>
+<span class="ttml-upload-name" id="t_ttml_name">Файл не выбран</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"><div class="form-group"><label>Нецензурная лексика <span class="req-star">*</span></label><select id="t_explicit"><option value="Нет">Нет</option><option value="Да">Да</option></select></div><div class="form-group"><label>Начало предпрослушивания</label><input id="t_previewStart" min="0" placeholder="Укажите в секундах, например 90 для 1:30" step="1" type="number"/><div class="text-sm" style="margin-top:6px;line-height:1.45;">Для TikTok, VK Клипов, Likee, YouTube Shorts и других коротких видео. Указывайте только секунды.</div></div></div>
+<div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;"><button class="btn-primary" onclick="saveTrackEdit()" style="flex: 1; min-width: 200px;">Сохранить и вернуться</button><button class="btn-outline" onclick="cancelTrackEdit()" style="min-width: 120px;">Отмена</button></div>
+</div>

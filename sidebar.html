@@ -1,0 +1,81 @@
+<div class="sidebar">
+<div class="portal-brand">
+<div class="logo-mark">AL</div>
+<div style="min-width:0; flex:1;">
+<div class="portal-brand-title">AetherLab</div>
+</div>
+<div class="bell-wrap hidden" id="bellWrapDesktop" onclick="showNotifications()" title="Уведомления">
+<svg class="bell-icon" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+<div class="unread-dot hidden" id="bellDotDesktop"></div>
+</div>
+<button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="window.innerWidth<=768 ? closeMobileSidebar() : toggleSidebarCollapsed()" aria-label="Свернуть боковую панель" title="Свернуть боковую панель"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+</div>
+<button class="menu-btn primary-nav" data-section="newRelease" onclick="startNewRelease()"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span><span>Новый релиз</span></span></button>
+<button class="menu-btn active" data-section="overview" id="btn-overview" onclick="nav('overview')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path></svg></span><span>Обзор</span></span></button>
+<button aria-expanded="false" class="menu-btn nav-parent" data-nav-toggle="catalog" id="nav-toggle-catalog" onclick="toggleNavMenu('catalog', event)">
+<span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 18V6l10-2v12"></path><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg></span><span>Ваша музыка</span></span>
+<span class="nav-chevron">▼</span>
+</button>
+<div class="nav-group-items hidden" id="nav-menu-catalog">
+<button class="menu-btn" data-section="catalog" id="btn-cat-all" onclick="navCatalog('all')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 18V6l10-2v12"></path><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg></span><span>Все релизы</span></span><span class="menu-badge" id="badge-cat-all">0</span></button>
+<button class="menu-btn" data-section="catalog" id="btn-cat-drafts" onclick="navCatalog('drafts')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"></path><path d="M13.5 6.5l4 4"></path></svg></span><span>Черновики</span></span><span class="menu-badge" id="badge-cat-drafts">0</span></button>
+<button class="menu-btn" data-section="catalog" id="btn-cat-mod" onclick="navCatalog('mod')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M6 3h12M6 21h12"></path><path d="M8 3c0 5 8 5 8 9s-8 4-8 9"></path><path d="M16 3c0 5-8 5-8 9s8 4 8 9"></path></svg></span><span>Модерация</span></span><span class="menu-badge" id="badge-cat-mod">0</span></button>
+<button class="menu-btn" data-section="catalog" id="btn-cat-fix" onclick="navCatalog('fix')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 8v5"></path><path d="M12 17h.01"></path><path d="M10.3 4.5h3.4L21 18.5 19.3 21H4.7L3 18.5l7.3-14Z"></path></svg></span><span>Требуется исправление</span></span><span class="menu-badge" id="badge-cat-fix">0</span></button>
+</div>
+<button aria-expanded="false" class="menu-btn nav-parent" data-nav-toggle="marketing" id="nav-toggle-marketing" onclick="toggleNavMenu('marketing', event)">
+<span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="m3 11 18-8-8 18-2-7-8-3Z"></path><path d="m13 11-2 3"></path></svg></span><span>Маркетинг</span></span>
+<span class="nav-chevron">▼</span>
+</button>
+<div class="nav-group-items hidden" id="nav-menu-marketing">
+<button class="menu-btn" data-section="karaoke" id="btn-karaoke" onclick="nav('karaoke')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 18V6l10-2v12"></path><circle cx="7" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle><path d="M4 21h16"></path></svg></span><span>Караоке текст</span></span></button>
+<button class="menu-btn" data-section="promoLinks" id="btn-promoLinks" onclick="nav('promoLinks')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1"></path><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1"></path></svg></span><span>Промо-ссылки</span></span></button>
+</div>
+<button class="menu-btn" data-section="financialReports" id="btn-financialReports" onclick="openFinancialReports()" type="button">
+<span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M4 7h16v12H4z"></path><path d="M7 4h10v3H7z"></path><path d="M8 11h8M8 15h5"></path></svg></span><span id="financialReportsMenuLabel">Финансовые отчёты</span></span>
+<span aria-hidden="true" class="aether-finance-lock hidden" id="financialReportsNavLock">🔒</span>
+</button>
+<button class="menu-btn" data-section="news" id="btn-news" onclick="nav('news')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h10"></path></svg></span><span>Новости</span></span><span class="nav-unread-dot hidden" id="newsUnreadDot"></span></button>
+<button class="menu-btn" data-section="guide" id="btn-guide" onclick="nav('guide')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9.5 9a2.7 2.7 0 1 1 4.7 1.8c-1.3 1.1-2.2 1.6-2.2 3.2"></path><path d="M12 18h.01"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Инструкция</span></span><span class="nav-unread-dot hidden" id="guideUnreadDot"></span></button>
+<div class="hidden" id="adminPanel">
+<button aria-expanded="false" class="menu-btn nav-parent" data-nav-toggle="admin" id="nav-toggle-admin" onclick="toggleNavMenu('admin', event)">
+<span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6l8-3Z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg></span><span>Управление</span></span>
+<span class="nav-chevron">▼</span>
+</button>
+<div class="nav-group-items hidden" id="nav-menu-admin">
+<button class="menu-btn" data-section="adminUsers" id="btn-adminUsers" onclick="nav('adminUsers')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.6-4 4.4-6 8-6s6.4 2 8 6"></path></svg></span><span>Кабинеты</span></span></button>
+<button class="menu-btn" data-section="questionnaires" id="btn-questionnaires" onclick="nav('questionnaires')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M8 3h8l2 3h2v15H4V6h2l2-3Z"></path><path d="M9 11h6"></path><path d="M9 15h4"></path></svg></span><span>Анкеты</span></span><span class="menu-badge" id="questionnairesCount">0</span></button>
+<button class="menu-btn" data-section="adminReleases" id="btn-adminReleases" onclick="nav('adminReleases')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6l8-3Z"></path><path d="m9 12 2 2 4-4"></path></svg></span><span>Все релизы</span></span></button>
+<button class="menu-btn" data-section="adminDeleted" id="btn-adminDeleted" onclick="nav('adminDeleted')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9 6h11v12H9l-5-6 5-6Z"></path><path d="m12 9 5 6M17 9l-5 6"></path></svg></span><span>Удалённые</span></span></button>
+<button class="menu-btn" data-section="adminContent" id="btn-adminContent" onclick="nav('adminContent')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M12 3l2.2 6.2L20 12l-5.8 2.8L12 21l-2.2-6.2L4 12l5.8-2.8L12 3Z"></path></svg></span><span>Новости и инструкция</span></span></button>
+</div>
+</div>
+<div class="hidden" id="supportNavGroup">
+<button aria-expanded="false" class="menu-btn nav-parent" data-nav-toggle="support" id="nav-toggle-support" onclick="toggleNavMenu('support', event)">
+<span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg></span><span>Поддержка</span></span>
+<span class="nav-chevron">▼</span>
+</button>
+<div class="nav-group-items hidden" id="nav-menu-support">
+<button class="menu-btn" id="btn-support-qa" onclick="navSupport('qa')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M9.5 9a2.7 2.7 0 1 1 4.7 1.8c-1.3 1.1-2.2 1.6-2.2 3.2"></path><path d="M12 18h.01"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Вопрос/ответ</span></span></button>
+<button class="menu-btn" id="btn-support-tickets" onclick="navSupport('tickets')"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M4 5h16v11H7l-3 3V5Z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg></span><span>Тикеты</span></span><span class="chat-unread-indicator hidden" id="chatUnreadDot"></span><span class="nav-unread-dot hidden" id="adminChatsUnreadDot"></span></button>
+</div>
+</div>
+<div style="margin-top:auto;padding-top:24px;">
+<div class="profile-card">
+<div style="display:flex;align-items:center;gap:10px;min-width:0;">
+<div class="avatar-wrap"><img id="userAvatar" src=""/></div>
+<div style="min-width:0;">
+<span id="userNameDisplay" style="font-weight:700;font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">Профиль</span>
+<span class="role-glow" id="userRoleDisplay" style="font-size:9px;">Артист</span>
+</div>
+</div>
+<svg fill="none" height="16" onclick="openSettings()" onmouseout="this.style.opacity='.7'" onmouseover="this.style.opacity='1'" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="cursor:pointer;opacity:.7;transition:.2s;min-width:16px;" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+</div>
+<div class="aether-bottom-actions">
+<button class="menu-btn" onclick="logout()" style="color:var(--danger);justify-content:flex-start;"><span class="mil"><span class="ico"><svg viewbox="0 0 24 24"><path d="M10 6 4 12l6 6"></path><path d="M4 12h14"></path><path d="M14 5h5v14h-5"></path></svg></span><span>Выйти</span></span></button>
+<div class="aether-language-switch">
+<div class="aether-language-menu" id="aetherLangMenu"></div>
+<button aria-label="Сменить язык" class="aether-language-current" id="aetherLangCurrent" title="Сменить язык" type="button">RU</button>
+</div>
+</div>
+</div>
+</div>

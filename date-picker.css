@@ -1,0 +1,316 @@
+/* AetherLab — extracted from the former monolithic index.html. */
+
+    /* ===== AetherLab custom date picker ===== */
+        .aether-native-date-hidden{
+            position:absolute!important;
+            opacity:0!important;
+            pointer-events:none!important;
+            width:0!important;
+            height:0!important;
+            padding:0!important;
+            margin:0!important;
+            border:0!important;
+        }
+        .aether-date-display{
+            width:100%;
+            padding:14px 48px 14px 16px;
+            background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.12);
+            color:#fff;
+            border-radius:22px;
+            font-size:14px;
+            outline:none;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+            transition:.18s;
+            cursor:pointer;
+        }
+        .aether-date-display:focus{
+            border-color:rgba(68,110,240,.75);
+            box-shadow:0 0 0 4px rgba(68,110,240,.16), inset 0 0 0 1px rgba(255,255,255,.04);
+        }
+        .aether-date-field{position:relative;width:100%;}
+        .aether-date-field::after{
+            content:"";
+            position:absolute;
+            right:16px;
+            top:50%;
+            width:18px;
+            height:18px;
+            transform:translateY(-50%);
+            pointer-events:none;
+            opacity:.85;
+            background:
+                linear-gradient(currentColor,currentColor) 4px 6px/10px 1.8px no-repeat,
+                linear-gradient(currentColor,currentColor) 4px 11px/10px 1.8px no-repeat,
+                linear-gradient(currentColor,currentColor) 5px 1px/1.8px 4px no-repeat,
+                linear-gradient(currentColor,currentColor) 11px 1px/1.8px 4px no-repeat;
+            border:1.8px solid currentColor;
+            border-radius:5px;
+            color:#d7deee;
+        }
+        .aether-date-popover{
+            position:fixed;
+            z-index:20000;
+            width:min(340px,calc(100vw - 28px));
+            padding:16px;
+            border-radius:26px;
+            background:linear-gradient(180deg,rgba(23,28,39,.98),rgba(15,19,26,.98));
+            border:1px solid rgba(255,255,255,.12);
+            box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 0 1px rgba(68,110,240,.08),0 0 34px rgba(68,110,240,.16);
+            backdrop-filter:blur(18px);
+            color:#f5f7fb;
+        }
+        .aether-date-head{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin-bottom:12px;
+        }
+        .aether-date-title{
+            color:#fff!important;
+            font-weight:800;
+            letter-spacing:-.02em;
+            font-size:16px;
+            padding:8px 10px;
+            border-radius:14px;
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.08);
+        }
+        .aether-date-nav{display:flex;gap:8px;}
+        .aether-date-nav button,
+        .aether-date-actions button{
+            border:1px solid rgba(255,255,255,.12);
+            background:rgba(255,255,255,.055);
+            color:#fff;
+            border-radius:14px;
+            padding:9px 12px;
+            box-shadow:none;
+        }
+        .aether-date-nav button:hover,
+        .aether-date-actions button:hover{background:rgba(68,110,240,.18);border-color:rgba(68,110,240,.36);}
+        .aether-date-week,
+        .aether-date-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+        .aether-date-week span{
+            text-align:center;
+            color:#aab0c0;
+            font-size:12px;
+            font-weight:700;
+            padding:8px 0;
+        }
+        .aether-date-day{
+            height:38px;
+            display:grid;
+            place-items:center;
+            border-radius:14px;
+            border:1px solid transparent;
+            background:transparent;
+            color:#eef2fb;
+            cursor:pointer;
+            font-weight:600;
+            transition:.16s;
+        }
+        .aether-date-day:hover{
+            background:rgba(68,110,240,.18);
+            border-color:rgba(68,110,240,.34);
+            transform:translateY(-1px);
+        }
+        .aether-date-day.other{color:rgba(170,176,192,.42);}
+        .aether-date-day.today{border-color:rgba(93,131,255,.42);box-shadow:inset 0 0 0 1px rgba(93,131,255,.12);}
+        .aether-date-day.selected{
+            background:linear-gradient(135deg,var(--accent),#5D83FF);
+            color:#fff;
+            border-color:rgba(255,255,255,.22);
+            box-shadow:0 10px 26px rgba(68,110,240,.34);
+        }
+        .aether-date-actions{
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+            margin-top:14px;
+            padding-top:12px;
+            border-top:1px solid rgba(255,255,255,.08);
+        }
+        .aether-date-actions .danger-lite{color:#ffb1b1;background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.18);}
+        @media(max-width:768px){
+            .aether-date-popover{left:14px!important;right:14px!important;top:auto!important;bottom:14px!important;width:auto;}
+            .aether-date-day{height:42px;}
+        }
+
+        /* ===== Calendar alignment fix ===== */
+        .aether-date-week,
+        .aether-date-grid{
+            grid-template-columns:repeat(7,minmax(0,1fr))!important;
+            align-items:center;
+        }
+        .aether-date-week span{
+            display:flex!important;
+            align-items:center;
+            justify-content:center;
+            min-width:0;
+            line-height:1;
+        }
+        .aether-date-day{
+            width:100%!important;
+            min-width:0!important;
+            padding:0!important;
+            margin:0!important;
+            display:flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            line-height:1!important;
+            text-align:center!important;
+        }
+        .aether-date-popover button.aether-date-day{
+            box-sizing:border-box!important;
+        }
+
+
+
+
+        /* ===== Date picker month/year chooser + wheel navigation ===== */
+        .aether-date-title{cursor:pointer;user-select:none;}
+        .aether-date-title:hover{border-color:rgba(68,110,240,.38);background:rgba(68,110,240,.10);}
+        .aether-month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+        .aether-month-btn{
+            min-height:46px;
+            display:flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            padding:0 10px!important;
+            border-radius:15px!important;
+            background:rgba(255,255,255,.05)!important;
+            border:1px solid rgba(255,255,255,.10)!important;
+            color:#eef2fb!important;
+            font-weight:700!important;
+            box-shadow:none!important;
+        }
+        .aether-month-btn:hover{background:rgba(68,110,240,.18)!important;border-color:rgba(68,110,240,.38)!important;}
+        .aether-month-btn.active{background:linear-gradient(135deg,var(--accent),#5D83FF)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important;box-shadow:0 10px 26px rgba(68,110,240,.28)!important;}
+        .aether-year-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+        .aether-year-value{font-size:18px;font-weight:900;color:#fff;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
+        .aether-date-hint{margin-top:10px;color:var(--text-muted);font-size:12px;line-height:1.45;}
+
+
+        /* ===== AetherLab calendar update: компактный календарь, ограничения дат, выбор месяца/года ===== */
+        .release-date-grid{
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:16px;
+            align-items:start;
+        }
+        .aether-date-popover{
+            width:min(300px,calc(100vw - 28px))!important;
+            max-height:calc(100dvh - 28px)!important;
+            padding:12px!important;
+            border-radius:22px!important;
+            overflow:auto!important;
+        }
+        .aether-date-popover.kite-positioned{
+            left:var(--kite-date-left,14px)!important;
+            top:var(--kite-date-top,14px)!important;
+            right:auto!important;
+            bottom:auto!important;
+        }
+        .aether-date-head{margin-bottom:8px!important;}
+        .aether-date-title{
+            font-size:15px!important;
+            padding:8px 11px!important;
+            cursor:pointer!important;
+            user-select:none!important;
+        }
+        .aether-date-nav{display:none!important;}
+        .aether-date-week,
+        .aether-date-grid{gap:4px!important;}
+        .aether-date-week span{
+            font-size:11px!important;
+            padding:7px 0!important;
+        }
+        .aether-date-day{
+            height:32px!important;
+            border-radius:11px!important;
+            font-size:13px!important;
+        }
+        .aether-date-day.disabled,
+        .aether-date-day:disabled{
+            opacity:.28!important;
+            cursor:not-allowed!important;
+            transform:none!important;
+            background:transparent!important;
+            border-color:transparent!important;
+            box-shadow:none!important;
+        }
+        .aether-date-actions{
+            margin-top:10px!important;
+            padding-top:10px!important;
+            justify-content:space-between!important;
+        }
+        .aether-date-actions button{
+            padding:8px 12px!important;
+            border-radius:13px!important;
+        }
+        .aether-date-hint{
+            margin-top:8px!important;
+            font-size:11px!important;
+        }
+        .aether-month-year-picker{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:10px;
+        }
+        .aether-picker-col{
+            min-width:0;
+        }
+        .aether-picker-col-title{
+            color:var(--text-muted);
+            font-size:12px;
+            font-weight:800;
+            margin:0 0 8px;
+        }
+        .aether-picker-list{
+            max-height:230px;
+            overflow:auto;
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            padding-right:4px;
+            overscroll-behavior:contain;
+        }
+        .aether-picker-option{
+            width:100%;
+            min-height:36px;
+            display:flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            padding:0 10px!important;
+            border-radius:13px!important;
+            background:rgba(255,255,255,.05)!important;
+            border:1px solid rgba(255,255,255,.10)!important;
+            color:#eef2fb!important;
+            font-weight:800!important;
+            box-shadow:none!important;
+        }
+        .aether-picker-option:hover,
+        .aether-picker-option.active{
+            background:linear-gradient(135deg,var(--accent),#5D83FF)!important;
+            border-color:rgba(255,255,255,.22)!important;
+            color:#fff!important;
+        }
+
+        .aether-native-date-hidden.error-field + .aether-date-display{
+            border-color:var(--danger)!important;
+            box-shadow:0 0 0 3px rgba(239,68,68,.14)!important;
+        }
+        @media(max-width:768px){
+            .release-date-grid{grid-template-columns:1fr;gap:12px;}
+            .aether-date-popover{
+                width:min(300px,calc(100vw - 28px))!important;
+                max-height:calc(100dvh - 28px)!important;
+                padding:12px!important;
+            }
+            .aether-date-day{height:34px!important;}
+            .aether-picker-list{max-height:210px;}
+        }
+
+

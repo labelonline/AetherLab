@@ -1,0 +1,121 @@
+<div aria-labelledby="aetherLanguageTitle" aria-modal="true" id="aetherLanguageGate" role="dialog">
+<div class="aether-language-card">
+<h2 id="aetherLanguageTitle">Выберите язык на котором будет ваш кабинет.</h2>
+<div class="aether-language-options">
+<button class="aether-language-choice" data-aether-language-choice="ru" type="button">Русский (Russian)</button>
+<button class="aether-language-choice" data-aether-language-choice="en" type="button">Английский (English)</button>
+<button class="aether-language-choice" data-aether-language-choice="uk" type="button">Український (Ukrainian)</button>
+</div>
+<button disabled="" id="aetherLanguageConfirm" type="button">Подтвердить</button>
+</div>
+</div>
+<div class="mobile-header hidden" id="mobHeader">
+<div class="mobile-header-left">
+<button class="mobile-menu-btn" type="button" onclick="openMobileSidebar()" aria-label="Открыть меню"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+<div class="mobile-header-logo" aria-hidden="true">AL</div>
+<div class="mobile-header-title"><strong id="mobileHeaderPageTitle">AetherLab</strong><span>AetherLab</span></div>
+</div>
+<div class="bell-wrap" onclick="showNotifications()" title="Уведомления">
+<svg class="bell-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+<div class="unread-dot hidden" id="bellDotMob"></div>
+</div>
+</div>
+<div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop" onclick="closeMobileSidebar()" aria-hidden="true"></div>
+<div class="overlay hidden" id="mediaViewer" onclick="if(event.target.id==='mediaViewer') closeContentMediaFullscreen()" style="z-index:10003;">
+<button aria-label="Закрыть" class="kite-modal-close" onclick="closeContentMediaFullscreen()" type="button">×</button>
+<div class="media-viewer-dialog">
+<div id="mediaViewerBox"></div>
+</div>
+</div>
+<div class="overlay hidden" id="uiAlert" style="z-index: 10001;"><div class="dialog"><h3 id="uiAlertTitle">Сообщение</h3><div class="text-sm" id="uiAlertText" style="color: #ccc; margin-bottom: 24px; line-height: 1.5; max-height: 50vh; overflow-y: auto;"></div><button class="btn-primary" onclick="document.getElementById('uiAlert').classList.add('hidden')" style="width: 100%;">Понятно</button></div></div>
+<div class="overlay hidden" id="financialReportsLockedModal" onclick="if(event.target.id==='financialReportsLockedModal') closeFinancialReportsLocked()" style="z-index:10004;">
+<div class="dialog aether-finance-dialog">
+<div aria-hidden="true" class="aether-finance-dialog-lock">🔒</div>
+<h3 id="financialReportsLockedTitle">Финансовые отчёты</h3>
+<p class="text-sm aether-finance-dialog-text" id="financialReportsLockedText">Упс! Этот раздел ещё не доработан. Пожалуйста, дождитесь его открытия.</p>
+<button class="btn-primary" id="financialReportsLockedClose" onclick="closeFinancialReportsLocked()" style="width:100%;" type="button">Закрыть</button>
+</div>
+</div>
+<div class="overlay hidden" id="financeUploadModal" onclick="if(event.target.id==='financeUploadModal') closeFinanceUploadModal()" style="z-index:10006;">
+<div class="dialog finance-upload-dialog">
+<div class="finance-modal-kicker" id="financeUploadKicker">Финансовые отчёты</div>
+<h3 id="financeUploadTitle">Загрузить файл</h3>
+<p class="text-sm finance-upload-hint" id="financeUploadHint">Поддерживаются XLSX, XLS и CSV. Максимальный размер файла — 10 МБ.</p>
+<input accept=".xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden" id="financeFileInput" type="file"/>
+<button class="btn-primary finance-file-picker" id="financeChooseFileBtn" onclick="document.getElementById('financeFileInput').click()" type="button">Загрузить файл</button>
+<div class="finance-upload-status" id="financeUploadStatus"></div>
+<button class="btn-outline" id="financeUploadCloseBtn" onclick="closeFinanceUploadModal()" style="width:100%;margin-top:12px;" type="button">Закрыть</button>
+</div>
+</div>
+<div class="overlay hidden" id="financeSuccessModal" onclick="if(event.target.id==='financeSuccessModal') closeFinanceSuccess()" style="z-index:10007;">
+<div class="dialog finance-success-dialog">
+<div aria-hidden="true" class="finance-success-check">✓</div>
+<h2 id="financeSuccessTitle">Успешно!</h2>
+<p class="text-sm" id="financeSuccessText"></p>
+<button class="btn-primary" id="financeSuccessCloseBtn" onclick="closeFinanceSuccess()" style="width:100%;" type="button">Закрыть</button>
+</div>
+</div>
+<div class="overlay hidden" id="uiPrompt" style="z-index: 10001;"><div class="dialog"><h3 id="uiPromptTitle">Ввод данных</h3><div id="uiPromptInputs" style="max-height: 60vh; overflow-y:auto; padding-right:10px;"></div><div class="dialog-actions"><button class="btn-outline" onclick="UI.closePrompt()">Отмена</button><button class="btn-primary" id="uiPromptConfirm">Подтвердить</button></div></div></div>
+<div class="overlay hidden" id="uiConfirm" style="z-index: 10001;"><div class="dialog"><h3 id="uiConfirmTitle">Подтверждение</h3><div class="dialog-actions"><button class="btn-outline" onclick="UI.closeConfirm()">Отмена</button><button class="btn-danger" id="uiConfirmBtn">Продолжить</button></div></div></div>
+<div class="overlay hidden" id="avatarCropper" style="z-index:10002;">
+<div class="dialog" style="max-width:460px;">
+<h3>Редактирование аватарки</h3>
+<p class="text-sm" style="margin-top:6px;">Передвиньте квадрат 1:1 на нужную часть изображения. Потяните уголок, чтобы увеличить или уменьшить область аватарки.</p>
+<div class="avatar-crop-area" id="avatarCropArea">
+<img alt="Аватарка" id="avatarCropImage"/>
+<div class="avatar-crop-square" id="avatarCropSquare"><div class="avatar-crop-resize" id="avatarCropResize"></div></div>
+</div>
+<div class="avatar-crop-actions">
+<button class="btn-outline" onclick="closeAvatarCropper()">Отмена</button>
+<button class="btn-primary" onclick="saveCroppedAvatar()">Сохранить аватарку</button>
+</div>
+</div>
+</div>
+<div class="overlay hidden" id="uiDraftConfirm" style="z-index: 10001;">
+<div class="dialog" style="max-width: 450px;">
+<h3>У вас есть несохраненные изменения</h3><p class="text-sm" style="color: #ccc; margin-bottom: 24px;">Вы хотите сохранить этот релиз как черновик, чтобы продолжить позже, или удалить его?</p>
+<div style="display: flex; gap: 12px; flex-direction: column;"><button class="btn-primary" id="draftSaveBtn">Сохранить черновик</button><button class="btn-danger" id="draftDeleteBtn">Удалить черновик</button><button class="btn-outline" onclick="document.getElementById('uiDraftConfirm').classList.add('hidden')">Отмена (Остаться здесь)</button></div>
+</div>
+</div>
+<div class="overlay hidden" id="adminReleaseModal" style="align-items: flex-start; padding: 40px; overflow-y: auto; z-index: 10000;">
+<button aria-label="Закрыть" class="kite-modal-close" onclick="document.getElementById('adminReleaseModal').classList.add('hidden')" type="button">×</button>
+<div class="dialog" style="max-width: 750px; width: 100%; margin: auto;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;"><h2>Детали релиза</h2></div>
+<div style="display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap;"><div style="width: 250px; max-width: 100%;"><img id="admRelCover" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"/><button class="btn-outline" id="admCoverDl" style="width: 100%; font-size: 12px;">Скачать обложку</button></div><div id="admRelInfo" style="flex: 1; min-width: 250px;"></div></div>
+<h3 style="font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">Медиафайлы и информация</h3><div id="admRelTracks" style="display: flex; flex-direction: column; gap: 12px;"></div>
+</div>
+</div>
+<div class="overlay hidden" id="banView" style="background: var(--bg-body); z-index: 9999;"><div style="text-align: center;"><h1 id="banTitleText" style="font-size: 32px; color: var(--danger);">Ваш кабинет заблокирован</h1><button class="btn-outline" onclick="UI.alert('Причина блокировки', currentUser.banReason)" style="margin: 20px 10px;">Узнать причину</button><button class="btn-primary" onclick="logout()" style="margin: 20px 10px;">Выйти</button></div></div>
+<div class="overlay hidden" id="authView" style="background: var(--bg-body); z-index: 9999;">
+<div class="dialog" style="border: none; background: transparent; max-width: 360px;">
+<div style="text-align:center;margin-bottom:40px;"><h2 style="font-size:32px;letter-spacing:0;font-weight:800;margin:0 auto;">AetherLab</h2></div>
+<div class="hidden" id="regFields"><div class="form-group"><input id="regLogin" placeholder="Логин" type="text"/></div></div>
+<div class="form-group"><input autocomplete="username" id="authEmail" onkeypress="if(event.key === 'Enter') processAuth()" placeholder="Логин" type="text"/></div>
+<div class="form-group"><input id="authPassword" onkeypress="if(event.key === 'Enter') processAuth()" placeholder="Пароль" type="password"/></div>
+<button class="btn-primary" id="mainAuthBtn" onclick="processAuth()" style="width: 100%; margin-top: 8px;">Войти в кабинет</button>
+<button class="btn-outline" id="switchAuthBtn" onclick="openQuestionnaireForm()" style="width: 100%; margin-top: 12px;">Заполнить анкету для вступления в лейбл</button>
+<button class="btn-outline questionnaire-check-btn" id="checkQuestionnaireBtn" onclick="showQuestionnaireCheck()" type="button"><svg viewbox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path><path d="M8 9h8M8 13h5"></path></svg><span>Проверить анкету</span></button>
+</div>
+</div>
+<div class="overlay hidden" id="questionnaireView" style="background: var(--bg-body); z-index: 9999; overflow-y:auto; padding:24px;">
+<button aria-label="Закрыть" class="kite-modal-close" onclick="closeQuestionnaireForm()" type="button">×</button>
+<div class="dialog questionnaire-dialog">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:22px;">
+<div>
+<h2 style="font-size:28px;font-weight:800;letter-spacing:-.03em;margin:0 0 8px;">Анкета для вступления в лейбл</h2>
+<p class="text-sm" style="line-height:1.55;">Заполните данные, чтобы команда AetherLab могла рассмотреть вашу заявку.</p>
+</div>
+</div>
+<div class="form-group"><label>Ваш творческий псевдоним (никнейм)<span class="req-star">*</span></label><input autocomplete="nickname" id="qArtistName" placeholder="Например: diviaxel" type="text"/></div>
+<div class="form-group"><label>Ваше имя<span class="req-star">*</span></label><input autocomplete="given-name" id="qFirstName" placeholder="Ваше имя" type="text"/></div>
+<div class="form-group"><label>Ваша фамилия<span class="req-star">*</span></label><input autocomplete="family-name" id="qLastName" placeholder="Ваша фамилия" type="text"/></div>
+<div class="form-group"><label>Ссылки на все ваши соц.сети<span class="req-star">*</span></label><textarea id="qSocialLinks" placeholder="Instagram, TikTok, Telegram, YouTube, VK и другие ссылки..." rows="3"></textarea></div>
+<div class="form-group"><label>Ссылки на две любых музыкальных платформы<span class="req-star">*</span></label><textarea id="qMusicLinks" placeholder="Например: Spotify и Яндекс Музыка / Apple Music / VK Музыка..." rows="3"></textarea></div>
+<div class="form-group"><label>Описание вас, как артиста<span class="req-star">*</span></label><textarea id="qArtistDescription" placeholder="Расскажите о достижениях, жанрах, стилях, опыте и всём, что поможет нам понять вас как артиста." rows="5"></textarea></div>
+<div class="form-group"><label>Почему вы выбрали именно наш лейбл<span class="req-star">*</span></label><textarea id="qWhyAetherLab" placeholder="Почему вы хотите работать именно с AetherLab?" rows="3"></textarea></div>
+<div class="form-group"><label>Ваша почта для связи<span class="req-star">*</span></label><input autocomplete="email" id="qEmail" placeholder="example@email.com" type="email"/></div>
+<div class="form-group"><label>Ваш Telegram-username для связи<span class="req-star">*</span></label><input autocomplete="off" id="qTelegram" placeholder="@username или https://t.me/username" type="text"/></div>
+<button class="btn-primary" onclick="submitQuestionnaire()" style="width:100%;margin-top:8px;">Отправить анкету</button>
+<button class="btn-outline" onclick="closeQuestionnaireForm()" style="width:100%;margin-top:12px;">Назад ко входу</button>
+</div>
+</div>
